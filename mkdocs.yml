@@ -1,0 +1,75 @@
+site_name: Bank Client Subscription Classifier - MLFlow Project
+site_description: MLFlow project for Kaggle Playground Series S5E8
+site_author: Álvaro Granados
+
+repo_url: https://github.com/alvarog2491/bank-client-subscription-classifier
+repo_name: alvarog2491/bank-client-subscription-classifier
+
+docs_dir: docs/docs
+
+nav:
+  - Home: index.md
+  - Data:
+      - Overview: data/overview.md
+      - EDA: data/eda.md
+  - MLFlow:
+      - Guide: mlflow/guide.md
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+            show_root_toc_entry: false
+            docstring_style: google
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path: .
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - tables
+  - footnotes
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
