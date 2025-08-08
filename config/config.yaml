@@ -1,0 +1,47 @@
+project:
+  name: "bank-client-subscription-classifier"
+  description: "Kaggle Playground Series S5E8 - Bank Client Subscription Prediction"
+  author: "Your Name"
+
+data:
+  raw_data_path: "data/raw/"
+  processed_data_path: "data/processed/"
+  train_file: "train.csv"
+  test_file: "test.csv"
+  target_column: "y"
+  id_column: "id"
+
+features:
+  categorical_features: []
+  numerical_features: []
+  features_to_drop: []
+
+model:
+  random_state: 42
+  test_size: 0.2
+  cv_folds: 5
+
+mlflow:
+  experiment_name: "bank-subscription-prediction"
+  tracking_uri: "file:./mlruns"
+  artifact_location: "file:./mlartifacts"
+
+hyperparameters:
+  lightgbm:
+    n_estimators: [100, 200, 300]
+    learning_rate: [0.05, 0.1, 0.15]
+    max_depth: [3, 5, 7]
+    num_leaves: [31, 50, 100]
+    min_child_samples: [20, 50, 100]
+  
+  xgboost:
+    n_estimators: [100, 200, 300]
+    learning_rate: [0.05, 0.1, 0.15]
+    max_depth: [3, 5, 7]
+    min_child_weight: [1, 3, 5]
+  
+  catboost:
+    iterations: [100, 200, 300]
+    learning_rate: [0.05, 0.1, 0.15]
+    depth: [3, 5, 7]
+    l2_leaf_reg: [1, 3, 5]
