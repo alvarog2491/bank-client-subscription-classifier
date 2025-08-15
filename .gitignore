@@ -102,6 +102,7 @@ dmypy.json
 # MLflow
 mlruns/
 mlartifacts/
+mlflow.db
 
 # Data files
 data/raw/*.csv
