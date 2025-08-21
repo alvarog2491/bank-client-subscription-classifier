@@ -1,7 +1,7 @@
 project:
   name: "bank-client-subscription-classifier"
   description: "Kaggle Playground Series S5E8 - Bank Client Subscription Prediction"
-  author: "Your Name"
+  author: "Álvaro Granados"
 
 data:
   raw_data_path: "data/raw/"
