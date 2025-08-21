@@ -140,3 +140,6 @@ Thumbs.db
 # Claude
 .claude/
 CLAUDE.md
+
+# Secrets
+.secrets
