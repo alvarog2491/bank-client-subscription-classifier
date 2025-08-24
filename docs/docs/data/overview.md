@@ -2,10 +2,11 @@
 
 ## Dataset Overview
 
-**Title**: Bank Term Deposit Subscription Prediction Dataset  
-**Source**: Portuguese banking institution marketing campaign data  
-**Original Dataset**: UCI Machine Learning Repository  
-**Competition**: Kaggle Playground Series S5E8  
+- **Title**: Bank Term Deposit Subscription Prediction Dataset
+- **Link**: https://www.kaggle.com/competitions/playground-series-s5e8/data
+- **Source**: Portuguese banking institution marketing campaign data  
+- **Original Dataset**: [UCI Machine Learning Repository](https://www.kaggle.com/datasets/sushant097/bank-marketing-dataset-full)
+- **Competition**: Kaggle Playground Series S5E8  
 
 **Objective**: Predict whether a client will subscribe to a bank term deposit based on direct marketing campaign data.
 
@@ -47,37 +48,18 @@ The dataset contains 17 features representing client information and campaign de
 
 ### Target Variable
 - **y**: Client subscribed to term deposit (binary: 1=yes, 0=no)
+  
+
 ## Data Characteristics
 
-**Size**: The original UCI dataset contains 45,211 entries, though the Kaggle competition dataset may differ in size.
+**Size**: The dataset contains 45,211 entries.
 
 **Quality**: No preprocessing has been applied to the original dataset. Users need to handle:
 - Missing values (if any)
 - Categorical variable encoding
-- Feature engineering opportunities
 - Outlier treatment
 
-**Special Values**: The `pdays` feature uses -1 to indicate clients not previously contacted.
-
-## Research Questions
-
-The dataset enables investigation of several key questions:
-
-1. **Prediction Accuracy**: Can we reliably predict term deposit subscription?
-2. **Feature Importance**: Which client characteristics most influence subscription decisions?
-3. **Campaign Optimization**: What contact strategies maximize conversion rates?
-4. **Seasonal Patterns**: Do timing factors affect campaign success?
-5. **Model Comparison**: How do different machine learning approaches perform?
-
-## Business Context
-
-Understanding this data requires considering the banking marketing context:
-
-- **Term deposits** are fixed-term investment products offering guaranteed returns
-- **Direct marketing** campaigns involve personalized client outreach
-- **Previous campaign history** often strongly predicts future behavior  
-- **Contact duration** may indicate client engagement level
-- **Economic factors** (reflected in balance, loans) influence financial decisions
+**Special Values**: The `pdays` feature uses -1 to indicate clients not previously contacted
 
 ## Data Source & License
 
@@ -94,9 +76,9 @@ Our exploration focuses on:
 1. **Data Quality Assessment**: Missing values, outliers, data types
 2. **Descriptive Analysis**: Feature distributions and summary statistics  
 3. **Target Relationship Analysis**: How features relate to subscription behavior
-4. **Correlation Analysis**: Inter-feature relationships for engineering opportunities
+4. **Correlation Analysis**: Inter-feature relationships
 5. **Temporal Patterns**: Seasonal and timing effects on campaign success
 
 **→ See [Exploratory Data Analysis](eda.md) for detailed findings and visualizations.**
 
-The analysis results guide feature engineering, model selection, and preprocessing decisions for optimal prediction performance.
+The analysis results guide model selection and preprocessing decisions for optimal prediction performance.

@@ -1,6 +1,6 @@
 # MLFlow Guidelines
 
-Essential MLFlow commands and patterns for the bank subscription prediction project.
+Essential MLFlow commands and patterns for the project.
 
 ## Server Management
 
@@ -11,7 +11,7 @@ Essential MLFlow commands and patterns for the bank subscription prediction proj
 mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlartifacts --port 5001
 
 # Access UI
-http://localhost:5000
+http://localhost:5001
 ```
 
 ## Basic Experiment Tracking
@@ -43,14 +43,13 @@ with mlflow.start_run(run_name="run-name"):
     mlflow.log_artifact("confusion_matrix.png")
 ```
 
-## MLFlow Projects
+## Run MLFlow project entry points
 
 [Official Documentation: MLflow Projects](https://mlflow.org/docs/latest/projects.html)
 
 ```bash
 # Run entry points
 mlflow run . -e data_preprocessing
-mlflow run . -e feature_engineering
 mlflow run . -e train -P model_type=lightgbm -P optimize=True -P n_trials=2
 mlflow run . -e predict -P model_uri="models:/ModelName/Production"
 mlflow run . -e main

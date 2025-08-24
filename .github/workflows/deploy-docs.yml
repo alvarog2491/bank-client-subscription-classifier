@@ -21,7 +21,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install MkDocs and Material theme
-        run: pip install "mkdocs>=1.5.0" "mkdocs-material>=9.0.0" "mkdocstrings>=0.23.0" "mkdocstrings-python>=1.7.0"
+        run: pip install "mkdocs>=1.5.0" "mkdocs-material>=9.0.0" "mkdocstrings>=0.23.0" "mkdocstrings-python>=1.7.0" "mkdocs-mermaid2-plugin>=1.1.0"
 
       - name: Build MkDocs site
         run: mkdocs build

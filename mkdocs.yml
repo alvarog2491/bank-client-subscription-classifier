@@ -13,8 +13,16 @@ nav:
       - Overview: data/overview.md
       - EDA: data/eda.md
       - Preprocessing: data/preprocessing.md
-  - MLFlow:
-      - Guide: mlflow/guide.md
+  - MLFlow Journey:
+      - Quick Reference: mlflow/guide.md
+      - V1.0 - Initial Implementation:
+          - Overview: mlflow/v1/01_overview.md
+          - Project Architecture: mlflow/v1/02_architecture.md
+          - Data Pipeline: mlflow/v1/03_data_pipeline.md
+          - Model Training: mlflow/v1/04_model_training.md
+          - Results & Analysis: mlflow/v1/05_results.md
+          - MLFlow Tracking: mlflow/v1/06_tracking.md
+          - Reproduction Guide: mlflow/v1/07_reproduction.md
 
 theme:
   name: material
@@ -44,6 +52,13 @@ theme:
 
 plugins:
   - search
+  - mermaid2:
+      arguments:
+        theme: default
+        themeVariables:
+          fontFamily: arial
+          fontSize: 12px
+      version: 10.6.1
   - mkdocstrings:
       handlers:
         python:
@@ -56,7 +71,11 @@ plugins:
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.highlight:

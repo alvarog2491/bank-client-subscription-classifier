@@ -6,7 +6,7 @@ This analysis examines the bank marketing dataset to understand customer charact
     All visualizations and analysis results presented in this documentation are generated directly from the Jupyter notebook located at `notebooks/01_exploratory_data_analysis.ipynb`. The images are automatically saved to the documentation images folder during notebook execution, ensuring that the documentation always reflects the most current analysis results.
 
 !!! warning "Raw Data Analysis"
-    This exploratory analysis examines the **raw, untransformed data** to understand the initial distributions and characteristics. No data preprocessing, feature scaling, encoding, or transformations have been applied at this stage. The purpose is to analyze the data in its original form to identify patterns, outliers, and data quality issues that will inform subsequent preprocessing and feature engineering decisions.
+    This exploratory analysis examines the **raw, untransformed data** to understand the initial distributions and characteristics. No data preprocessing, feature scaling, encoding, or transformations have been applied at this stage. The purpose is to analyze the data in its original form to identify patterns, outliers, and data quality issues that will inform subsequent preprocessing decisions.
 
 ## Dataset Overview
 
@@ -115,4 +115,4 @@ The analysis highlights several important patterns that can guide both campaign 
 
 **Contact frequency shows diminishing returns.** Results suggest 2–3 contact attempts as the sweet spot, with more frequent outreach reducing effectiveness and potentially harming the customer relationship.
 
-Finally, the **7.3:1 class imbalance** mirrors real-world business conditions but requires careful handling in model development. These insights point to valuable opportunities for feature engineering, particularly around engagement duration, demographic-seasonal patterns, and relationship history.
+Finally, the **7.3:1 class imbalance** mirrors real-world business conditions but requires careful handling in model development. These insights reveal important patterns around engagement duration, demographic-seasonal trends, and relationship history that inform model development.
