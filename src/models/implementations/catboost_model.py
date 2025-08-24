@@ -76,3 +76,19 @@ class CatBoostModel(BaseModel):
             signature=signature,
             input_example=input_example,
         )
+
+    @classmethod
+    def load(cls, model_uri: str, config: dict):
+        """Load a CatBoost model from MLflow with proper predict_proba support."""
+        try:
+            # Load using CatBoost-specific flavor for better predict_proba support
+            model = mlflow.catboost.load_model(model_uri)
+            
+            # Create a model instance
+            instance = cls(config)
+            instance.model = model
+            instance.is_trained = True
+            
+            return instance
+        except Exception as e:
+            raise RuntimeError(f"Failed to load CatBoost model from {model_uri}: {e}")

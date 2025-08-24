@@ -134,3 +134,9 @@ class BaseModel(ABC):
     ):
         """Log model to MLflow."""
         pass
+
+    @classmethod
+    @abstractmethod
+    def load(cls, model_uri: str, config: dict):
+        """Load a model from MLflow with proper predict_proba support."""
+        pass

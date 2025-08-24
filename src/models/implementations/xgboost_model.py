@@ -75,3 +75,19 @@ class XGBoostModel(BaseModel):
             signature=signature,
             input_example=input_example,
         )
+
+    @classmethod
+    def load(cls, model_uri: str, config: dict):
+        """Load an XGBoost model from MLflow with proper predict_proba support."""
+        try:
+            # Load using XGBoost-specific flavor for better predict_proba support
+            model = mlflow.xgboost.load_model(model_uri)
+            
+            # Create a model instance
+            instance = cls(config)
+            instance.model = model
+            instance.is_trained = True
+            
+            return instance
+        except Exception as e:
+            raise RuntimeError(f"Failed to load XGBoost model from {model_uri}: {e}")

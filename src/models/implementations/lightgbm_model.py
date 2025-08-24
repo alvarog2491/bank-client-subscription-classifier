@@ -76,3 +76,19 @@ class LightGBMModel(BaseModel):
             signature=signature,
             input_example=input_example,
         )
+
+    @classmethod
+    def load(cls, model_uri: str, config: dict):
+        """Load a LightGBM model from MLflow with proper predict_proba support."""
+        try:
+            # Load using LightGBM-specific flavor for better predict_proba support
+            model = mlflow.lightgbm.load_model(model_uri)
+            
+            # Create a model instance
+            instance = cls(config)
+            instance.model = model
+            instance.is_trained = True
+            
+            return instance
+        except Exception as e:
+            raise RuntimeError(f"Failed to load LightGBM model from {model_uri}: {e}")
