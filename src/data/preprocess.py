@@ -19,10 +19,13 @@ def preprocess_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
     # Load raw data
     train_df, test_df = load_data()
 
-    # Get categorical features from config
+    # Get features configuration from config
     categorical_features = config["features"]["categorical_features"]
+    features_to_drop = config["features"].get("features_to_drop", [])
 
     print(f"Label encoding categorical features: {categorical_features}")
+    if features_to_drop:
+        print(f"Features to drop: {features_to_drop}")
 
     # Initialize label encoders dictionary
     label_encoders = {}
@@ -52,6 +55,13 @@ def preprocess_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
             print(f"  - {feature}: {len(le.classes_)} unique values")
         else:
             print(f"Warning: Feature '{feature}' not found in data")
+
+    # Drop specified features (only from training data to preserve id for predictions)
+    for feature in features_to_drop:
+        if feature in train_df.columns:
+            train_df = train_df.drop(columns=[feature])
+            print(f"Dropped feature '{feature}' from training data")
+            # Note: Keep id in test data for prediction output
 
     # Save processed data
     processed_path = config["data"]["processed_data_path"]
