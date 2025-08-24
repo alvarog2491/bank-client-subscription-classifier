@@ -13,30 +13,22 @@ def _setup_mlflow(config):
     mlflow.set_experiment(config["mlflow"]["experiment_name"])
 
 
-def _resolve_model_uri(model_uri, model_name):
-    """Resolve model URI from model_name or validate existing model_uri."""
-    if model_name and not model_uri:
-        model_uri = f"models:/{model_name}/latest"
-        print(f"Using model from registry: {model_name} (latest version)")
-        return model_uri
-    elif model_uri:
-        print(f"Using provided model URI: {model_uri}")
-        return model_uri
-    else:
-        raise ValueError("Either model_uri or model_name must be provided")
+def _validate_model_uri(model_uri):
+    """Validate that model_uri is provided."""
+    if not model_uri:
+        raise ValueError("model_uri is required")
+
+    print(f"Using model URI: {model_uri}")
+    return model_uri
 
 
-def _resolve_paths(config, input_path, output_path):
-    """Resolve input and output paths, using defaults if not provided."""
+def _validate_paths(input_path, output_path):
+    """Validate that required paths are provided and create output directory."""
     if input_path is None:
-        input_path = (
-            f"{config['data']['processed_data_path']}test_processed.csv"
-        )
-        print(f"Using default input path: {input_path}")
+        raise ValueError("input_path is required")
 
     if output_path is None:
-        output_path = "data/predictions/test_predictions.csv"
-        print(f"Using default output path: {output_path}")
+        raise ValueError("output_path is required")
 
     # Create output directory if it doesn't exist
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -45,22 +37,43 @@ def _resolve_paths(config, input_path, output_path):
 
 
 def _load_model(model_uri, model_type, config):
-    """Load model from MLflow with proper predict_proba support."""
+    """Load model from MLflow with proper predict_proba support.
+
+    Args:
+        model_uri: MLflow model URI
+        model_type: Model type (required) - one of: lightgbm, xgboost, catboost
+        config: Configuration dictionary
+
+    Returns:
+        Loaded model instance
+
+    Raises:
+        ValueError: If model_type is not provided or not supported
+    """
     print(f"Loading model from: {model_uri}")
 
-    # Check if model type is in supported models list from ModelFactory
-    if model_type and model_type in ModelFactory.get_supported_models():
-        try:
-            print(
-                f"Loading as {model_type} model with native predict_proba support"
-            )
-            return ModelFactory.load_model(model_type, model_uri, config)
-        except Exception as e:
-            print(f"Failed to load with {model_type} loader: {e}")
+    if not model_type:
+        raise ValueError(
+            "model_type is required. "
+            "Supported types: lightgbm, xgboost, catboost"
+        )
 
-    # Fallback to pyfunc
-    print("Loading with pyfunc interface")
-    return mlflow.pyfunc.load_model(model_uri)
+    supported_models = ModelFactory.get_supported_models()
+    if model_type not in supported_models:
+        raise ValueError(
+            f"Unsupported model_type: {model_type}. "
+            f"Supported types: {supported_models}"
+        )
+
+    try:
+        print(
+            f"Loading as {model_type} model with native predict_proba support"
+        )
+        return ModelFactory.load_model(model_type, model_uri, config)
+    except Exception as e:
+        raise RuntimeError(
+            f"Failed to load {model_type} model from {model_uri}: {e}"
+        )
 
 
 def _prepare_prediction_data(input_data, config, model):
@@ -125,44 +138,32 @@ def _save_predictions(predictions_df, output_path):
 
 
 def predict_model(
-    model_uri=None, model_name=None, input_path=None, output_path=None
+    model_uri=None, model_type=None, input_path=None, output_path=None
 ):
     """Generate predictions using MLflow model.
 
     Args:
-        model_uri: MLflow model URI (e.g., 'runs:/run-id/model')
-        model_name: Registered model name (uses latest version)
-        input_path: Path to input CSV file
-        output_path: Path to save predictions CSV file
+        model_uri: MLflow model URI (required) - e.g., 'models:/model-name/1' or 'runs:/run-id/model'
+        model_type: Model type (required) - one of: lightgbm, xgboost, catboost
+        input_path: Path to input CSV file (required)
+        output_path: Path to save predictions CSV file (required)
 
     Returns:
         pd.DataFrame: Predictions dataframe
+
+    Raises:
+        ValueError: If required parameters are not provided
     """
     config = load_config()
 
     # Setup MLflow
     _setup_mlflow(config)
 
-    # Resolve model URI and paths
-    model_uri = _resolve_model_uri(model_uri, model_name)
-    input_path, output_path = _resolve_paths(config, input_path, output_path)
+    # Validate model URI and paths
+    model_uri = _validate_model_uri(model_uri)
+    input_path, output_path = _validate_paths(input_path, output_path)
 
-    # Determine model type from model_name or model_uri
-    model_type = None
-    if model_name:
-        model_name_lower = model_name.lower()
-        supported_models = ModelFactory.get_supported_models()
-        model_type = next(
-            (m for m in supported_models if m in model_name_lower), None
-        )
-    elif model_uri:
-        model_uri_lower = model_uri.lower()
-        supported_models = ModelFactory.get_supported_models()
-        model_type = next(
-            (m for m in supported_models if m in model_uri_lower), None
-        )
-
-    # Load model and data
+    # Load model with explicit model type
     model = _load_model(model_uri, model_type, config)
 
     print(f"Loading data from: {input_path}")
@@ -200,35 +201,38 @@ if __name__ == "__main__":
         description="Generate predictions using MLflow model"
     )
 
-    # Model specification (mutually exclusive)
-    model_group = parser.add_mutually_exclusive_group(required=True)
-    model_group.add_argument(
+    parser.add_argument(
         "--model-uri",
         type=str,
+        required=True,
         help="MLFlow model URI (e.g., 'models:/model-name/1' or 'runs:/run-id/model')",
-    )
-    model_group.add_argument(
-        "--model-name",
-        type=str,
-        help="MLFlow registered model name (uses latest version)",
     )
 
     parser.add_argument(
+        "--model-type",
+        type=str,
+        required=True,
+        choices=["lightgbm", "xgboost", "catboost"],
+        help="Model type (required)",
+    )
+    parser.add_argument(
         "--input-path",
         type=str,
-        help="Path to input CSV file (default: data/processed/test_processed.csv)",
+        required=True,
+        help="Path to input CSV file",
     )
     parser.add_argument(
         "--output-path",
         type=str,
-        help="Path to save predictions CSV file (default: data/predictions/test_predictions.csv)",
+        required=True,
+        help="Path to save predictions CSV file",
     )
 
     args = parser.parse_args()
 
     predict_model(
         model_uri=args.model_uri,
-        model_name=args.model_name,
+        model_type=args.model_type,
         input_path=args.input_path,
         output_path=args.output_path,
     )
