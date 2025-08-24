@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import joblib
 from sklearn.preprocessing import LabelEncoder
-from typing import Tuple, Dict, Any
+from typing import Tuple, Dict
 from config.config_loader import load_config
 
 

@@ -1,9 +1,7 @@
 import argparse
 import pandas as pd
-import numpy as np
 import mlflow
 import mlflow.pyfunc
-import os
 from config.config_loader import load_config
 
 
@@ -48,21 +46,6 @@ def predict_model(model_uri, input_path, output_path):
     print(f"Predictions completed! Results saved to {output_path}")
     print(f"Number of predictions: {len(predictions)}")
 
-    # Log prediction summary
-    with mlflow.start_run():
-        mlflow.log_param("model_uri", model_uri)
-        mlflow.log_param("input_path", input_path)
-        mlflow.log_param("output_path", output_path)
-        mlflow.log_metric("num_predictions", len(predictions))
-
-        # Log prediction distribution
-        unique_preds, counts = np.unique(predictions, return_counts=True)
-        for pred, count in zip(unique_preds, counts):
-            mlflow.log_metric(f"prediction_class_{pred}_count", count)
-
-        # Log the predictions file as artifact
-        mlflow.log_artifact(output_path)
-
     return predictions_df
 
 
@@ -72,7 +55,8 @@ if __name__ == "__main__":
         "--model-uri",
         type=str,
         required=True,
-        help="MLFlow model URI (e.g., 'models:/model-name/1' or 'runs:/run-id/model')",
+        help="MLFlow model URI "
+        "(e.g., 'models:/model-name/1' or 'runs:/run-id/model')",
     )
     parser.add_argument(
         "--input-path",
