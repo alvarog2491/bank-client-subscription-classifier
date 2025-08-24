@@ -30,6 +30,12 @@ class BaseModel(ABC):
     def predict_proba(self, X):
         pass
     
+    @classmethod
+    @abstractmethod
+    def load(cls, model_uri: str, config: dict):
+        """Load a model from MLflow with proper predict_proba support."""
+        pass
+    
     def evaluate(self, X_test, y_test):
         """Complete model evaluation with multiple metrics"""
         y_pred = self.predict(X_test)
@@ -62,6 +68,8 @@ class BaseModel(ABC):
 ### Model Factory
 Located in `src/models/core/model_factory.py`
 
+The ModelFactory provides both model creation and loading capabilities:
+
 ```python
 class ModelFactory:
     _models = {
@@ -77,6 +85,26 @@ class ModelFactory:
         
         model_class = cls._models[model_type]
         return model_class(config, hyperparams)
+    
+    @classmethod
+    def load_model(cls, model_type: str, model_uri: str, config: Dict[str, Any]):
+        """Load a model instance from MLflow with proper predict_proba support.
+        
+        Args:
+            model_type: Type of model to load (e.g. 'lightgbm', 'xgboost', 'catboost')
+            model_uri: MLflow model URI
+            config: Configuration dictionary for the model
+            
+        Returns:
+            Loaded model instance with native predict_proba support
+        """
+        if model_type not in cls._models:
+            supported_models = list(cls._models.keys())
+            raise ValueError(f"Unsupported model type: {model_type}. "
+                           f"Supported models: {supported_models}")
+        
+        model_class = cls._models[model_type]
+        return model_class.load(model_uri, config)
 ```
 
 ## Model Implementations
@@ -114,6 +142,22 @@ def train(self, X_train, y_train, X_val=None, y_val=None):
         eval_set=eval_set,
         callbacks=[lgb.early_stopping(10)] if eval_set else None
     )
+
+@classmethod
+def load(cls, model_uri: str, config: dict):
+    """Load a LightGBM model from MLflow with native predict_proba support."""
+    try:
+        # Load using LightGBM-specific flavor for better predict_proba support
+        model = mlflow.lightgbm.load_model(model_uri)
+        
+        # Create a model instance
+        instance = cls(config)
+        instance.model = model
+        instance.is_trained = True
+        
+        return instance
+    except Exception as e:
+        raise RuntimeError(f"Failed to load LightGBM model from {model_uri}: {e}")
 ```
 
 ### 2. XGBoost Model  
@@ -145,6 +189,22 @@ def train(self, X_train, y_train, X_val=None, y_val=None):
         eval_set.append((X_val, y_val))
     
     self.model.fit(X_train, y_train, eval_set=eval_set, verbose=False)
+
+@classmethod
+def load(cls, model_uri: str, config: dict):
+    """Load an XGBoost model from MLflow with native predict_proba support."""
+    try:
+        # Load using XGBoost-specific flavor for better predict_proba support
+        model = mlflow.xgboost.load_model(model_uri)
+        
+        # Create a model instance
+        instance = cls(config)
+        instance.model = model
+        instance.is_trained = True
+        
+        return instance
+    except Exception as e:
+        raise RuntimeError(f"Failed to load XGBoost model from {model_uri}: {e}")
 ```
 
 ### 3. CatBoost Model
@@ -179,6 +239,22 @@ def train(self, X_train, y_train, X_val=None, y_val=None):
         early_stopping_rounds=10 if eval_set else None,
         verbose=False
     )
+
+@classmethod
+def load(cls, model_uri: str, config: dict):
+    """Load a CatBoost model from MLflow with native predict_proba support."""
+    try:
+        # Load using CatBoost-specific flavor for better predict_proba support
+        model = mlflow.catboost.load_model(model_uri)
+        
+        # Create a model instance
+        instance = cls(config)
+        instance.model = model
+        instance.is_trained = True
+        
+        return instance
+    except Exception as e:
+        raise RuntimeError(f"Failed to load CatBoost model from {model_uri}: {e}")
 ```
 
 ## Training Process
@@ -222,6 +298,8 @@ def train_model(model_type):
         model_name = f"{config['project']['name']}-{model_type}"
         model_instance.log_model(X_val, model_name=model_name)
 ```
+!!! warning "Unbalanced dataset"
+    The dataset is highly unbalanced, so it's crucial to stratify the train-test split by the target variable (Y).
 
 ## MLFlow Integration
 
@@ -256,7 +334,7 @@ for metric_name, metric_value in metrics.items():
 ```
 
 ### Model Registration
-Each trained model is registered in MLFlow model registry:
+Each trained model is registered in MLFlow model registry using algorithm-specific flavors:
 ```python
 # LightGBM example
 mlflow.lightgbm.log_model(

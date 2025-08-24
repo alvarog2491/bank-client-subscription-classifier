@@ -48,11 +48,14 @@ with mlflow.start_run(run_name="run-name"):
 [Official Documentation: MLflow Projects](https://mlflow.org/docs/latest/projects.html)
 
 ```bash
-# Run entry points
+# Run MLFLow entry points
 mlflow run . -e data_preprocessing
-mlflow run . -e train -P model_type=lightgbm -P optimize=True -P n_trials=2
+mlflow run . -e train -P model_type=lightgbm
 mlflow run . -e predict -P model_uri="models:/ModelName/Production"
 mlflow run . -e main
+
+# Python 
+python -m src.models.train_model --model-type lightgbm
 ```
 
 ## Model Registry

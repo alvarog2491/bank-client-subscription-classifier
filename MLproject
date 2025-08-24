@@ -17,9 +17,10 @@ entry_points:
   predict:
     parameters:
       model_uri: { type: string }
+      model_type: { type: string }
       input_path: { type: string }
-      output_path: { type: string, default: "predictions.csv" }
-    command: "python -m src.models.predict_model --model-uri {model_uri} --input-path {input_path} --output-path {output_path}"
+      output_path: { type: string }
+    command: "python -m src.models.predict_model --model-uri {model_uri} --model-type {model_type} --input-path {input_path} --output-path {output_path}"
 
   main:
     command: "python main.py"
