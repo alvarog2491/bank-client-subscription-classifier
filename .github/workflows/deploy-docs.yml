@@ -1,3 +1,5 @@
+# act --container-architecture linux/amd64 -W .github/workflows/deploy-docs.yml
+
 name: Deploy MkDocs
 
 on:

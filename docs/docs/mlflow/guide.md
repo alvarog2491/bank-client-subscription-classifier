@@ -8,7 +8,7 @@ Essential MLFlow commands and patterns for the bank subscription prediction proj
 
 ```bash
 # Start MLFlow server
-mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlartifacts
+mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlartifacts --port 5001
 
 # Access UI
 http://localhost:5000
@@ -51,7 +51,7 @@ with mlflow.start_run(run_name="run-name"):
 # Run entry points
 mlflow run . -e data_preprocessing
 mlflow run . -e feature_engineering
-mlflow run . -e train -P model_type=lightgbm -P n_estimators=200
+mlflow run . -e train -P model_type=lightgbm -P optimize=True -P n_trials=2
 mlflow run . -e predict -P model_uri="models:/ModelName/Production"
 mlflow run . -e main
 ```
@@ -163,10 +163,21 @@ def quick_experiment(model, params, name):
 ```bash
 # Check port usage
 lsof -i :5000
+# for macOS
+lsof -i tcp:5000
+kill -9 $(lsof -ti tcp:5000)
 
 # Use different port
 mlflow server --port 5001 --backend-store-uri sqlite:///mlflow.db
 
+# Remove all MLflow cache and data:
+rm -rf ~/.mlflow
+rm -rf mlflow.db
+rm -rf mlartifacts/
+rm -rf .mlflow
+
+# End active run
+python -c "import mlflow; mlflow.end_run() if mlflow.active_run() else print('No active run')"
 # Check artifact permissions
 ls -la mlartifacts/
 

@@ -12,6 +12,7 @@ nav:
   - Data:
       - Overview: data/overview.md
       - EDA: data/eda.md
+      - Preprocessing: data/preprocessing.md
   - MLFlow:
       - Guide: mlflow/guide.md
 
