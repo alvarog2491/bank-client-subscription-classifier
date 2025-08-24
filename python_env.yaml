@@ -1,4 +1,4 @@
-python: "3.9.0"
+python: "3.13.5"
 build_dependencies:
   - pip
 dependencies:
@@ -12,7 +12,6 @@ dependencies:
   - lightgbm>=4.0.0
   - xgboost>=2.0.0
   - catboost>=1.2.0
-  - optuna>=3.4.0
   - shap>=0.43.0
   - python-dotenv>=1.0.0
   - pyyaml>=6.0.0

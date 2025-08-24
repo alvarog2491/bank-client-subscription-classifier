@@ -4,32 +4,28 @@ python_env: python_env.yaml
 
 entry_points:
   data_preprocessing:
-    command: "python src/data/preprocess.py"
+    command: "python -m src.data.preprocess"
 
   feature_engineering:
     command: "python src/features/build_features.py"
 
   train:
     parameters:
-      model_type: {type: string, default: "lightgbm"}
-      n_estimators: {type: int, default: 100}
-      learning_rate: {type: float, default: 0.1}
-      max_depth: {type: int, default: 6}
-      random_state: {type: int, default: 42}
-    command: "python src/models/train_model.py --model-type {model_type} --n-estimators {n_estimators} --learning-rate {learning_rate} --max-depth {max_depth} --random-state {random_state}"
-
-  predict:
-    parameters:
-      model_uri: {type: string}
-      input_path: {type: string}
-      output_path: {type: string, default: "predictions.csv"}
-    command: "python src/models/predict_model.py --model-uri {model_uri} --input-path {input_path} --output-path {output_path}"
+      model_type: { type: string, default: "lightgbm" }
+    command: "python -m src.models.train_model --model-type {model_type}"
 
   evaluate:
     parameters:
-      model_uri: {type: string}
-      test_data_path: {type: string}
-    command: "python src/models/evaluate.py --model-uri {model_uri} --test-data-path {test_data_path}"
+      model_uri: { type: string }
+      test_data_path: { type: string }
+    command: "python -m src.models.inference.evaluate --model-uri {model_uri} --test-data-path {test_data_path}"
+
+  predict:
+    parameters:
+      model_uri: { type: string }
+      input_path: { type: string }
+      output_path: { type: string, default: "predictions.csv" }
+    command: "python -m src.models.inference.predict_model --model-uri {model_uri} --input-path {input_path} --output-path {output_path}"
 
   main:
     command: "python main.py"
