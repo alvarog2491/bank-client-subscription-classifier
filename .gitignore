@@ -143,3 +143,6 @@ CLAUDE.md
 
 # Secrets
 .secrets
+
+# models metadata
+catboost_info/
