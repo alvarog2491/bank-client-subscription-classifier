@@ -106,3 +106,24 @@ id,y
 - **ID column**: Preserves test data IDs
 - **Target column**: Named 'y' with probability values (0-1)
 - **Precision**: Rounded to 3 decimal places
+
+## Distribution Analysis
+
+A validation step in model inference is comparing the prediction distribution against the training target distribution. This analysis helps detect potential model issues, particularly in imbalanced datasets where models might predict a single class for all samples.
+
+### Training vs Predictions Distribution Comparison
+
+<div style="text-align: center;">
+    <a href="/images/target_distribution.png" target="_blank">
+        <img src="/images/target_distribution.png" alt="Training Target Distribution" width="800" style="cursor: pointer; border: 1px solid #ddd; border-radius: 4px; transition: 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+    </a>
+</div>
+
+<div style="text-align: center;">
+    <a href="/images/predictions_distribution.png" target="_blank">
+        <img src="/images/predictions_distribution.png" alt="Test Predictions Distribution" width="800" style="cursor: pointer; border: 1px solid #ddd; border-radius: 4px; transition: 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+    </a>
+    
+</div>
+
+The distribution comparison shows that the model maintains similar class proportions between training and test predictions, this indicates that the model isn't defaulting to predicting only the majority class and maintains decision boundaries learned during training
