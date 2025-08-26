@@ -7,7 +7,12 @@ from .core.model_factory import ModelFactory
 from config.config_loader import load_config
 
 
-def train_model(model_type):
+def train_model(model_type: str) -> str:
+    """Train model with full MLflow pipeline.
+
+    Performs setup, data splitting, training, evaluation,
+    and model registration.
+    """
     config = load_config()
 
     # Set MLFlow experiment

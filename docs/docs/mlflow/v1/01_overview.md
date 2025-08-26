@@ -19,6 +19,9 @@ The V1.0 implementation emphasizes getting a working system with baseline perfor
 ### Evaluation Metrics
 While the system tracks different metrics (accuracy, precision, recall, F1-score), **AUC (Area Under Curve)** serves as the primary optimization target since it aligns with the competition's evaluation criteria and handles class imbalance effectively.
 
+!!! info "AUC Methodology"
+    AUC quantifies the model's discriminative capacity by evaluating the trade-off between true positive rate and false positive rate across all classification thresholds. It represents the probability that the model assigns a higher score to a randomly selected positive instance than to a randomly selected negative instance, with values ranging from 0.5 (random performance) to 1.0 (perfect discrimination).
+
 ### MLflow Integration
 Every model training run is tracked in MLflow with:
 

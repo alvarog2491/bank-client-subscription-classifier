@@ -21,15 +21,7 @@ class ModelFactory:
         config: Dict[str, Any],
         hyperparams: Dict[str, Any] = None,
     ) -> BaseModel:
-        """Create a model instance based on the model type.
-
-        Args:
-            model_type: Type of model to create (e.g. 'lightgbm' or 'xgboost')
-            config: Configuration dictionary for the model
-            hyperparams: Hyperparameters for the model
-
-        Returns:
-            Instance of the specified model type
+        """Create model instance using factory pattern.
 
         Raises:
             ValueError: If model_type is not supported
@@ -45,29 +37,18 @@ class ModelFactory:
         return model_class(config, hyperparams)
 
     @classmethod
-    def get_supported_models(cls):
-        """Get list of supported model types."""
+    def get_supported_models(cls) -> list:
+        """Return list of supported model types."""
         return list(cls._models.keys())
 
     @classmethod
     def load_model(
-        cls,
-        model_type: str,
-        model_uri: str,
-        config: Dict[str, Any]
+        cls, model_type: str, model_uri: str, config: Dict[str, Any]
     ) -> BaseModel:
-        """Load a model instance from MLflow.
+        """Load model from MLflow using algorithm-specific flavor
+        for predict_proba support.
 
-        Args:
-            model_type: Type of model to load (e.g. 'lightgbm', 'xgboost', 'catboost')
-            model_uri: MLflow model URI
-            config: Configuration dictionary for the model
-
-        Returns:
-            Loaded model instance
-
-        Raises:
-            ValueError: If model_type is not supported
+        Validates model_type and delegates to appropriate model class loader.
         """
         if model_type not in cls._models:
             supported_models = list(cls._models.keys())

@@ -3,6 +3,7 @@ import mlflow.catboost
 import pandas as pd
 import numpy as np
 from ..core.base_model import BaseModel
+from typing import Dict, Any
 from mlflow.models import infer_signature
 
 
@@ -11,7 +12,7 @@ class CatBoostModel(BaseModel):
 
     @property
     def model_type(self) -> str:
-        """Return the model type name."""
+        """Model type identifier."""
         return "catboost"
 
     def train(
@@ -21,7 +22,7 @@ class CatBoostModel(BaseModel):
         X_val: pd.DataFrame = None,
         y_val: pd.Series = None,
     ) -> None:
-        """Train the CatBoost model."""
+        """Train model with optional early stopping on validation data."""
         self.model = CatBoostClassifier(
             iterations=self.hyperparams.get("iterations", 1000),
             learning_rate=self.hyperparams.get("learning_rate", 0.03),
@@ -45,19 +46,21 @@ class CatBoostModel(BaseModel):
         self.is_trained = True
 
     def predict(self, X: pd.DataFrame) -> np.ndarray:
-        """Make predictions with the CatBoost model."""
+        """Predict class labels."""
         if not self.is_trained:
             raise ValueError("Model must be trained before making predictions")
         return self.model.predict(X)
 
     def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
-        """Predict class probabilities with the CatBoost model."""
+        """Predict class probabilities."""
         if not self.is_trained:
             raise ValueError("Model must be trained before making predictions")
         return self.model.predict_proba(X)
 
-    def log_model(self, X_val: pd.DataFrame = None, model_name: str = None):
-        """Log CatBoost model to MLflow."""
+    def log_model(
+        self, X_val: pd.DataFrame = None, model_name: str = None
+    ) -> None:
+        """Log model to MLflow with signature inference and type conversion."""
 
         if not self.is_trained:
             raise ValueError("Model must be trained before logging")
@@ -78,17 +81,20 @@ class CatBoostModel(BaseModel):
         )
 
     @classmethod
-    def load(cls, model_uri: str, config: dict):
-        """Load a CatBoost model from MLflow with proper predict_proba support."""
+    def load(cls, model_uri: str, config: Dict[str, Any]):
+        """Load model from MLflow using CatBoost-specific flavor
+        for predict_proba support."""
         try:
-            # Load using CatBoost-specific flavor for better predict_proba support
+            # Load using CatBoost-specific flavor for better predict_proba
             model = mlflow.catboost.load_model(model_uri)
-            
+
             # Create a model instance
             instance = cls(config)
             instance.model = model
             instance.is_trained = True
-            
+
             return instance
         except Exception as e:
-            raise RuntimeError(f"Failed to load CatBoost model from {model_uri}: {e}")
+            raise RuntimeError(
+                f"Failed to load CatBoost model from {model_uri}: {e}"
+            )

@@ -10,6 +10,19 @@ The model training system implements three gradient boosting algorithms with har
 Located in `src/models/core/base_model.py`
 
 ```python
+from abc import ABC, abstractmethod
+from typing import Any, Dict
+import pandas as pd
+import numpy as np
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    roc_auc_score,
+    confusion_matrix,
+)
+
 class BaseModel(ABC):
     def __init__(self, config: Dict[str, Any], hyperparams: Dict[str, Any] = None):
         self.config = config
@@ -19,34 +32,54 @@ class BaseModel(ABC):
         self.is_trained = False
     
     @abstractmethod
-    def train(self, X_train, y_train, X_val=None, y_val=None):
+    def train(self, X_train: pd.DataFrame, y_train: pd.Series, X_val: pd.DataFrame = None, y_val: pd.Series = None) -> None:
+        """Train the model."""
         pass
     
     @abstractmethod
-    def predict(self, X):
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        """Predict class labels."""
         pass
     
     @abstractmethod  
-    def predict_proba(self, X):
+    def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
+        """Predict class probabilities."""
         pass
     
     @classmethod
     @abstractmethod
-    def load(cls, model_uri: str, config: dict):
-        """Load a model from MLflow with proper predict_proba support."""
+    def load(cls, model_uri: str, config: Dict[str, Any]):
+        """Load model from MLflow with predict_proba support."""
         pass
     
-    def evaluate(self, X_test, y_test):
-        """Complete model evaluation with multiple metrics"""
+    def evaluate(self, X_test: pd.DataFrame, y_test: pd.Series) -> Dict[str, float]:
+        """Evaluate model with comprehensive metrics and print results.
+
+        Computes accuracy, precision, recall, F1, AUC (if possible),
+        and confusion matrix. Handles cases where predict_proba
+          is not available.
+        """
+        if not self.is_trained:
+            raise ValueError("Model must be trained before evaluation")
+            
         y_pred = self.predict(X_test)
-        y_pred_proba = self.predict_proba(X_test)[:, 1]
+        
+        # Get prediction probabilities if available
+        try:
+            y_pred_proba = self.predict_proba(X_test)[:, 1]
+        except (AttributeError, IndexError):
+            y_pred_proba = None
         
         # Calculate complete metrics
         accuracy = accuracy_score(y_test, y_pred)
         precision = precision_score(y_test, y_pred, average="binary")
         recall = recall_score(y_test, y_pred, average="binary")
         f1 = f1_score(y_test, y_pred, average="binary")
-        auc = roc_auc_score(y_test, y_pred_proba)
+        
+        if y_pred_proba is not None:
+            auc = roc_auc_score(y_test, y_pred_proba)
+        else:
+            auc = None
         
         # Confusion matrix components
         cm = confusion_matrix(y_test, y_pred)
@@ -57,7 +90,7 @@ class BaseModel(ABC):
             "precision": float(precision), 
             "recall": float(recall),
             "f1_score": float(f1),
-            "auc": float(auc),
+            "auc": float(auc) if auc is not None else None,
             "true_negatives": int(tn),
             "false_positives": int(fp),
             "false_negatives": int(fn),
@@ -79,24 +112,25 @@ class ModelFactory:
     }
     
     @classmethod
-    def create_model(cls, model_type, config, hyperparams=None):
+    def create_model(cls, model_type: str, config: Dict[str, Any], hyperparams: Dict[str, Any] = None) -> BaseModel:
+        """Create model instance using factory pattern.
+        
+        Raises:
+            ValueError: If model_type is not supported
+        """
         if model_type not in cls._models:
-            raise ValueError(f"Unsupported model type: {model_type}")
+            supported_models = list(cls._models.keys())
+            raise ValueError(f"Unsupported model type: {model_type}. "
+                           f"Supported models: {supported_models}")
         
         model_class = cls._models[model_type]
         return model_class(config, hyperparams)
     
     @classmethod
     def load_model(cls, model_type: str, model_uri: str, config: Dict[str, Any]):
-        """Load a model instance from MLflow with proper predict_proba support.
+        """Load model from MLflow using algorithm-specific flavor for predict_proba support.
         
-        Args:
-            model_type: Type of model to load (e.g. 'lightgbm', 'xgboost', 'catboost')
-            model_uri: MLflow model URI
-            config: Configuration dictionary for the model
-            
-        Returns:
-            Loaded model instance with native predict_proba support
+        Validates model_type and delegates to appropriate model class loader.
         """
         if model_type not in cls._models:
             supported_models = list(cls._models.keys())
@@ -117,14 +151,15 @@ Located in `src/models/implementations/lightgbm_model.py`
 lightgbm:
   n_estimators: 200
   learning_rate: 0.1
-  max_depth: 6
-  num_leaves: 100
-  min_child_samples: 50
+  max_depth: 3
+  num_leaves: 50
+  min_child_samples: 30
 ```
 
 **Implementation Details:**
 ```python
-def train(self, X_train, y_train, X_val=None, y_val=None):
+def train(self, X_train: pd.DataFrame, y_train: pd.Series, X_val: pd.DataFrame = None, y_val: pd.Series = None) -> None:
+    """Train model with optional early stopping on validation data."""
     self.model = lgb.LGBMClassifier(
         n_estimators=self.hyperparams.get("n_estimators", 100),
         learning_rate=self.hyperparams.get("learning_rate", 0.1),
@@ -135,17 +170,20 @@ def train(self, X_train, y_train, X_val=None, y_val=None):
         verbose=-1
     )
     
-    eval_set = [(X_val, y_val)] if X_val is not None else None
+    eval_set = None
+    if X_val is not None and y_val is not None:
+        eval_set = [(X_val, y_val)]
     
     self.model.fit(
         X_train, y_train,
         eval_set=eval_set,
         callbacks=[lgb.early_stopping(10)] if eval_set else None
     )
+    self.is_trained = True
 
 @classmethod
-def load(cls, model_uri: str, config: dict):
-    """Load a LightGBM model from MLflow with native predict_proba support."""
+def load(cls, model_uri: str, config: Dict[str, Any]):
+    """Load model from MLflow using LightGBM-specific flavor for predict_proba support."""
     try:
         # Load using LightGBM-specific flavor for better predict_proba support
         model = mlflow.lightgbm.load_model(model_uri)
@@ -168,13 +206,14 @@ Located in `src/models/implementations/xgboost_model.py`
 xgboost:
   n_estimators: 200
   learning_rate: 0.1
-  max_depth: 6
-  min_child_weight: 3
+  max_depth: 7
+  min_child_weight: 4
 ```
 
 **Implementation Details:**
 ```python
-def train(self, X_train, y_train, X_val=None, y_val=None):
+def train(self, X_train: pd.DataFrame, y_train: pd.Series, X_val: pd.DataFrame = None, y_val: pd.Series = None) -> None:
+    """Train model with training and validation evaluation sets."""
     self.model = xgb.XGBClassifier(
         n_estimators=self.hyperparams.get("n_estimators", 100),
         learning_rate=self.hyperparams.get("learning_rate", 0.3),
@@ -189,10 +228,11 @@ def train(self, X_train, y_train, X_val=None, y_val=None):
         eval_set.append((X_val, y_val))
     
     self.model.fit(X_train, y_train, eval_set=eval_set, verbose=False)
+    self.is_trained = True
 
 @classmethod
-def load(cls, model_uri: str, config: dict):
-    """Load an XGBoost model from MLflow with native predict_proba support."""
+def load(cls, model_uri: str, config: Dict[str, Any]):
+    """Load model from MLflow using XGBoost-specific flavor for predict_proba support."""
     try:
         # Load using XGBoost-specific flavor for better predict_proba support
         model = mlflow.xgboost.load_model(model_uri)
@@ -215,13 +255,14 @@ Located in `src/models/implementations/catboost_model.py`
 catboost:
   iterations: 200
   learning_rate: 0.1
-  depth: 6
-  l2_leaf_reg: 5
+  depth: 8
+  l2_leaf_reg: 4
 ```
 
 **Implementation Details:**
 ```python
-def train(self, X_train, y_train, X_val=None, y_val=None):
+def train(self, X_train: pd.DataFrame, y_train: pd.Series, X_val: pd.DataFrame = None, y_val: pd.Series = None) -> None:
+    """Train model with optional early stopping on validation data."""
     self.model = CatBoostClassifier(
         iterations=self.hyperparams.get("iterations", 1000),
         learning_rate=self.hyperparams.get("learning_rate", 0.03),
@@ -231,7 +272,9 @@ def train(self, X_train, y_train, X_val=None, y_val=None):
         verbose=False
     )
     
-    eval_set = (X_val, y_val) if X_val is not None else None
+    eval_set = None
+    if X_val is not None and y_val is not None:
+        eval_set = (X_val, y_val)
     
     self.model.fit(
         X_train, y_train,
@@ -239,10 +282,11 @@ def train(self, X_train, y_train, X_val=None, y_val=None):
         early_stopping_rounds=10 if eval_set else None,
         verbose=False
     )
+    self.is_trained = True
 
 @classmethod
-def load(cls, model_uri: str, config: dict):
-    """Load a CatBoost model from MLflow with native predict_proba support."""
+def load(cls, model_uri: str, config: Dict[str, Any]):
+    """Load model from MLflow using CatBoost-specific flavor for predict_proba support."""
     try:
         # Load using CatBoost-specific flavor for better predict_proba support
         model = mlflow.catboost.load_model(model_uri)
@@ -261,7 +305,8 @@ def load(cls, model_uri: str, config: dict):
 Located in `src/models/train_model.py`
 
 ```python
-def train_model(model_type):
+def train_model(model_type: str) -> str:
+    """Train model with full MLflow pipeline: setup, split data, train, evaluate, register."""
     config = load_config()
     
     # MLFlow setup
@@ -269,7 +314,8 @@ def train_model(model_type):
     mlflow.set_experiment(config["mlflow"]["experiment_name"])
     
     # Load processed data
-    train_data = pd.read_csv("data/processed/train_processed.csv")
+    processed_path = config["data"]["processed_data_path"]
+    train_data = pd.read_csv(os.path.join(processed_path, "train_processed.csv"))
     X = train_data.drop([config["data"]["target_column"]], axis=1)
     y = train_data[config["data"]["target_column"]]
     
@@ -282,6 +328,12 @@ def train_model(model_type):
     )
     
     with mlflow.start_run(nested=True):
+        # Log parameters
+        mlflow.log_param("model_type", model_type)
+        mlflow.log_param("random_state", random_state)
+        for param, value in hyperparams.items():
+            mlflow.log_param(param, value)
+        
         # Create model via factory
         model_instance = ModelFactory.create_model(
             model_type, config, hyperparams

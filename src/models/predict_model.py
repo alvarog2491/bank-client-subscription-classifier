@@ -3,18 +3,20 @@ import os
 import pandas as pd
 import mlflow
 import mlflow.pyfunc
+from typing import Dict, Any, Tuple, Optional
+import numpy as np
 from config.config_loader import load_config
 from src.models.core.model_factory import ModelFactory
 
 
-def _setup_mlflow(config):
-    """Setup MLflow tracking URI and experiment."""
+def _setup_mlflow(config: Dict[str, Any]) -> None:
+    """Configure MLflow from config settings."""
     mlflow.set_tracking_uri(config["mlflow"]["tracking_uri"])
     mlflow.set_experiment(config["mlflow"]["experiment_name"])
 
 
-def _validate_model_uri(model_uri):
-    """Validate that model_uri is provided."""
+def _validate_model_uri(model_uri: str) -> str:
+    """Validate model URI is provided."""
     if not model_uri:
         raise ValueError("model_uri is required")
 
@@ -22,8 +24,8 @@ def _validate_model_uri(model_uri):
     return model_uri
 
 
-def _validate_paths(input_path, output_path):
-    """Validate that required paths are provided and create output directory."""
+def _validate_paths(input_path: str, output_path: str) -> Tuple[str, str]:
+    """Validate paths are provided and create output directory."""
     if input_path is None:
         raise ValueError("input_path is required")
 
@@ -36,19 +38,10 @@ def _validate_paths(input_path, output_path):
     return input_path, output_path
 
 
-def _load_model(model_uri, model_type, config):
-    """Load model from MLflow with proper predict_proba support.
+def _load_model(model_uri: str, model_type: str, config: Dict[str, Any]):
+    """Load model from MLflow with validation and error handling.
 
-    Args:
-        model_uri: MLflow model URI
-        model_type: Model type (required) - one of: lightgbm, xgboost, catboost
-        config: Configuration dictionary
-
-    Returns:
-        Loaded model instance
-
-    Raises:
-        ValueError: If model_type is not provided or not supported
+    Validates model_type against supported types and uses ModelFactory.
     """
     print(f"Loading model from: {model_uri}")
 
@@ -76,8 +69,14 @@ def _load_model(model_uri, model_type, config):
         )
 
 
-def _prepare_prediction_data(input_data, config, model):
-    """Prepare data for prediction based on model's expected input schema."""
+def _prepare_prediction_data(
+    input_data: pd.DataFrame, config: Dict[str, Any], model
+) -> Tuple[pd.DataFrame, Optional[pd.Series], str]:
+    """Prepare data for prediction with schema detection and type conversion.
+
+    Detects model's expected schema, handles ID column presence/absence,
+    and converts int64 columns to float64 for MLflow compatibility.
+    """
     id_col = config["data"]["id_column"]
 
     # Get model's expected input schema if available
@@ -86,7 +85,7 @@ def _prepare_prediction_data(input_data, config, model):
         expected_columns = (
             [col.name for col in model_schema.inputs] if model_schema else None
         )
-    except:
+    except AttributeError:
         expected_columns = None
 
     if id_col in input_data.columns:
@@ -95,7 +94,8 @@ def _prepare_prediction_data(input_data, config, model):
         # If model expects id column, keep it; otherwise remove it
         if expected_columns and id_col in expected_columns:
             print(
-                f"Model expects '{id_col}' column - keeping it in prediction data"
+                f"Model expects '{id_col}' column - "
+                f"keeping it in prediction data"
             )
             prediction_data = input_data.copy()
             # Convert all numeric columns to float64 to match model schema
@@ -106,7 +106,8 @@ def _prepare_prediction_data(input_data, config, model):
                 prediction_data[col] = prediction_data[col].astype("float64")
         else:
             print(
-                f"Model doesn't expect '{id_col}' column - removing it from prediction data"
+                f"Model doesn't expect '{id_col}' column - "
+                f"removing it from prediction data"
             )
             prediction_data = input_data.drop([id_col], axis=1)
             # Still need to convert numeric types for remaining columns
@@ -121,16 +122,18 @@ def _prepare_prediction_data(input_data, config, model):
         return input_data.copy(), None, id_col
 
 
-def _create_predictions_dataframe(predictions, ids, id_col):
-    """Create predictions DataFrame with proper column structure for Kaggle submission."""
+def _create_predictions_dataframe(
+    predictions: np.ndarray, ids: Optional[pd.Series], id_col: str
+) -> pd.DataFrame:
+    """Create predictions DataFrame with IDs for Kaggle submission."""
     if ids is not None:
         return pd.DataFrame({id_col: ids, "y": predictions})
     else:
         return pd.DataFrame({"y": predictions})
 
 
-def _save_predictions(predictions_df, output_path):
-    """Save predictions to CSV file."""
+def _save_predictions(predictions_df: pd.DataFrame, output_path: str) -> None:
+    """Save predictions to CSV and print summary."""
     print(f"Saving predictions to: {output_path}")
     predictions_df.to_csv(output_path, index=False)
     print(f"Predictions completed! Results saved to {output_path}")
@@ -138,21 +141,15 @@ def _save_predictions(predictions_df, output_path):
 
 
 def predict_model(
-    model_uri=None, model_type=None, input_path=None, output_path=None
-):
-    """Generate predictions using MLflow model.
+    model_uri: Optional[str] = None,
+    model_type: Optional[str] = None,
+    input_path: Optional[str] = None,
+    output_path: Optional[str] = None,
+) -> pd.DataFrame:
+    """Generate predictions from MLflow model and save to CSV.
 
-    Args:
-        model_uri: MLflow model URI (required) - e.g., 'models:/model-name/1' or 'runs:/run-id/model'
-        model_type: Model type (required) - one of: lightgbm, xgboost, catboost
-        input_path: Path to input CSV file (required)
-        output_path: Path to save predictions CSV file (required)
-
-    Returns:
-        pd.DataFrame: Predictions dataframe
-
-    Raises:
-        ValueError: If required parameters are not provided
+    Complete pipeline: validate inputs, load model, prepare data,
+    predict probabilities (with fallback), save results.
     """
     config = load_config()
 
@@ -205,7 +202,8 @@ if __name__ == "__main__":
         "--model-uri",
         type=str,
         required=True,
-        help="MLFlow model URI (e.g., 'models:/model-name/1' or 'runs:/run-id/model')",
+        help="MLFlow model URI (e.g., 'models:/model-name/1' or "
+        "'runs:/run-id/model')",
     )
 
     parser.add_argument(

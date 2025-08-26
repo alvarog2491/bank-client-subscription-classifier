@@ -7,11 +7,7 @@ from config.config_loader import load_config
 
 
 def load_train_data() -> pd.DataFrame:
-    """Load training data from the raw data folder.
-
-    Returns:
-        pd.DataFrame: Training data
-    """
+    """Load training data from config-specified path."""
     config = load_config()
     train_path = os.path.join(
         config["data"]["raw_data_path"], config["data"]["train_file"]
@@ -20,11 +16,7 @@ def load_train_data() -> pd.DataFrame:
 
 
 def load_test_data() -> pd.DataFrame:
-    """Load test data from the raw data folder.
-
-    Returns:
-        pd.DataFrame: Test data
-    """
+    """Load test data from config-specified path."""
     config = load_config()
     test_path = os.path.join(
         config["data"]["raw_data_path"], config["data"]["test_file"]
@@ -33,11 +25,7 @@ def load_test_data() -> pd.DataFrame:
 
 
 def load_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Load both training and test data.
-
-    Returns:
-        Tuple[pd.DataFrame, pd.DataFrame]: Training and test data
-    """
+    """Load and return both training and test datasets."""
     train_df = load_train_data()
     test_df = load_test_data()
 
@@ -48,10 +36,10 @@ def load_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def load_processed_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Load already processed training and test data.
+    """Load preprocessed datasets.
 
-    Returns:
-        Tuple[pd.DataFrame, pd.DataFrame]: Processed training and test data
+    Raises:
+        FileNotFoundError: If processed files don't exist
     """
     config = load_config()
     processed_path = config["data"]["processed_data_path"]
@@ -78,8 +66,8 @@ def load_processed_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
 def load_label_encoders() -> Dict[str, LabelEncoder]:
     """Load saved label encoders.
 
-    Returns:
-        Dict[str, LabelEncoder]: Dictionary of label encoders
+    Raises:
+        FileNotFoundError: If encoders file doesn't exist
     """
     config = load_config()
     encoders_path = os.path.join(

@@ -7,7 +7,17 @@ The inference pipeline generates predictions using trained MLflow models with ex
 The `predict_model.py` module follows a straightforward workflow:
 
 ```python
-def predict_model(model_uri=None, model_type=None, input_path=None, output_path=None):
+def predict_model(
+    model_uri: Optional[str] = None, 
+    model_type: Optional[str] = None, 
+    input_path: Optional[str] = None, 
+    output_path: Optional[str] = None
+) -> pd.DataFrame:
+    """Generate predictions from MLflow model and save to CSV.
+    
+    Complete pipeline: validate inputs, load model, prepare data,
+    predict probabilities (with fallback), save results.
+    """
     config = load_config()
     
     # Setup MLflow - Connect to tracking server

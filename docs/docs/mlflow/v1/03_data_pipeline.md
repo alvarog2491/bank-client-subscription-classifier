@@ -43,7 +43,14 @@ mlflow run . -e data_preprocessing
 The preprocessing performs label encoding on categorical features:
 
 ```python
-def preprocess_data():
+def preprocess_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Apply label encoding to categorical features and save encoders.
+    
+    Fits encoders on combined train+test data to ensure consistency.
+    Saves processed datasets and encoders to configured paths.
+    """
+    config = load_config()
+
     # Load raw data
     train_df, test_df = load_data()
     
@@ -93,7 +100,7 @@ data:
 features:
   categorical_features: [job, marital, education, default, housing, loan, contact, month, poutcome]
   numerical_features: [age, balance, day, duration, campaign, pdays, previous]
-  features_to_drop: []
+  features_to_drop: [id]
   unknown_values: ["unknown"]
 ```
 

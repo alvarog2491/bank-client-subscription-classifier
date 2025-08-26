@@ -1,8 +1,8 @@
 import mlflow
 
 
-def main():
-    """Run the complete pipeline"""
+def main() -> None:
+    """Run complete MLflow pipeline."""
 
     print("Running data preprocessing...")
     mlflow.run(".", entry_point="data_preprocessing")

@@ -34,24 +34,28 @@ class BaseModel(ABC):
         X_val: pd.DataFrame = None,
         y_val: pd.Series = None,
     ) -> None:
-        """Train the model on the provided data."""
+        """Train the model."""
         pass
 
     @abstractmethod
     def predict(self, X: pd.DataFrame) -> np.ndarray:
-        """Make predictions on the provided data."""
+        """Predict class labels."""
         pass
 
     @abstractmethod
     def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
-        """Predict class probabilities for the provided data."""
+        """Predict class probabilities."""
         pass
 
     def evaluate(
         self, X_test: pd.DataFrame, y_test: pd.Series
     ) -> Dict[str, float]:
-        """Evaluate model performance on test data
-        with comprehensive metrics."""
+        """Evaluate model with comprehensive metrics and print results.
+
+        Computes accuracy, precision, recall, F1, AUC (if possible),
+        and confusion matrix. Handles cases where predict_proba
+          is not available.
+        """
         if not self.is_trained:
             raise ValueError("Model must be trained before evaluation")
 
@@ -113,7 +117,7 @@ class BaseModel(ABC):
         return metrics
 
     def log_metrics(self, metrics: Dict[str, float]) -> None:
-        """Log metrics to MLflow."""
+        """Log numerical metrics to MLflow (excludes complex objects)."""
         for metric_name, metric_value in metrics.items():
             if (
                 isinstance(metric_value, (int, float))
@@ -124,19 +128,19 @@ class BaseModel(ABC):
     @property
     @abstractmethod
     def model_type(self) -> str:
-        """Return the model type name."""
+        """Model type identifier."""
         pass
 
     @abstractmethod
     def log_model(
         self,
         X_val: pd.DataFrame = None,
-    ):
-        """Log model to MLflow."""
+    ) -> None:
+        """Log model to MLflow with signature inference."""
         pass
 
     @classmethod
     @abstractmethod
-    def load(cls, model_uri: str, config: dict):
-        """Load a model from MLflow with proper predict_proba support."""
+    def load(cls, model_uri: str, config: Dict[str, Any]):
+        """Load model from MLflow with predict_proba support."""
         pass

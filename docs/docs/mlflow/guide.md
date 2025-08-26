@@ -23,7 +23,7 @@ import mlflow
 import mlflow.sklearn
 
 # Setup
-mlflow.set_tracking_uri("http://localhost:5000")
+mlflow.set_tracking_uri("sqlite:///mlflow.db")
 mlflow.set_experiment("experiment-name")
 
 # Track run
@@ -114,9 +114,9 @@ study.optimize(objective, n_trials=50)
 ```yaml
 # config/config.yaml
 mlflow:
-  tracking_uri: "http://localhost:5000"
+  tracking_uri: "sqlite:///mlflow.db"
   experiment_name: "bank-subscription-prediction"
-  model_name: "BankSubscriptionClassifier"
+  artifact_location: "./mlartifacts"
 ```
 
 ```python

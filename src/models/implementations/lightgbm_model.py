@@ -3,6 +3,7 @@ import mlflow.lightgbm
 import pandas as pd
 import numpy as np
 from ..core.base_model import BaseModel
+from typing import Dict, Any
 from mlflow.models import infer_signature
 
 
@@ -11,7 +12,7 @@ class LightGBMModel(BaseModel):
 
     @property
     def model_type(self) -> str:
-        """Return the model type name."""
+        """Model type identifier."""
         return "lightgbm"
 
     def train(
@@ -21,7 +22,7 @@ class LightGBMModel(BaseModel):
         X_val: pd.DataFrame = None,
         y_val: pd.Series = None,
     ) -> None:
-        """Train the LightGBM model."""
+        """Train model with optional early stopping on validation data."""
         self.model = lgb.LGBMClassifier(
             n_estimators=self.hyperparams.get("n_estimators", 100),
             learning_rate=self.hyperparams.get("learning_rate", 0.1),
@@ -45,19 +46,24 @@ class LightGBMModel(BaseModel):
         self.is_trained = True
 
     def predict(self, X: pd.DataFrame) -> np.ndarray:
-        """Make predictions with the LightGBM model."""
+        """Predict class labels."""
         if not self.is_trained:
             raise ValueError("Model must be trained before making predictions")
         return self.model.predict(X)
 
     def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
-        """Predict class probabilities with the LightGBM model."""
+        """Predict class probabilities."""
         if not self.is_trained:
             raise ValueError("Model must be trained before making predictions")
         return self.model.predict_proba(X)
 
-    def log_model(self, X_val: pd.DataFrame = None, model_name: str = None):
-        """Log LightGBM model to MLflow."""
+    def log_model(
+        self, X_val: pd.DataFrame = None, model_name: str = None
+    ) -> None:
+        """Log model to MLflow with signature inference and type conversion.
+
+        Converts int columns to float64 for MLflow compatibility.
+        """
 
         if not self.is_trained:
             raise ValueError("Model must be trained before logging")
@@ -78,17 +84,20 @@ class LightGBMModel(BaseModel):
         )
 
     @classmethod
-    def load(cls, model_uri: str, config: dict):
-        """Load a LightGBM model from MLflow with proper predict_proba support."""
+    def load(cls, model_uri: str, config: Dict[str, Any]):
+        """Load model from MLflow using LightGBM-specific flavor
+        for predict_proba support."""
         try:
-            # Load using LightGBM-specific flavor for better predict_proba support
+            # Load using LightGBM-specific flavor for better predict_proba
             model = mlflow.lightgbm.load_model(model_uri)
-            
+
             # Create a model instance
             instance = cls(config)
             instance.model = model
             instance.is_trained = True
-            
+
             return instance
         except Exception as e:
-            raise RuntimeError(f"Failed to load LightGBM model from {model_uri}: {e}")
+            raise RuntimeError(
+                f"Failed to load LightGBM model from {model_uri}: {e}"
+            )

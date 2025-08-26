@@ -3,6 +3,7 @@ import mlflow.xgboost
 import pandas as pd
 import numpy as np
 from ..core.base_model import BaseModel
+from typing import Dict, Any
 from mlflow.models import infer_signature
 
 
@@ -11,7 +12,7 @@ class XGBoostModel(BaseModel):
 
     @property
     def model_type(self) -> str:
-        """Return the model type name."""
+        """Model type identifier."""
         return "xgboost"
 
     def train(
@@ -21,7 +22,7 @@ class XGBoostModel(BaseModel):
         X_val: pd.DataFrame = None,
         y_val: pd.Series = None,
     ) -> None:
-        """Train the XGBoost model."""
+        """Train model with training and validation evaluation sets."""
         self.model = xgb.XGBClassifier(
             n_estimators=self.hyperparams.get("n_estimators", 100),
             learning_rate=self.hyperparams.get("learning_rate", 0.3),
@@ -44,19 +45,21 @@ class XGBoostModel(BaseModel):
         self.is_trained = True
 
     def predict(self, X: pd.DataFrame) -> np.ndarray:
-        """Make predictions with the XGBoost model."""
+        """Predict class labels."""
         if not self.is_trained:
             raise ValueError("Model must be trained before making predictions")
         return self.model.predict(X)
 
     def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
-        """Predict class probabilities with the XGBoost model."""
+        """Predict class probabilities."""
         if not self.is_trained:
             raise ValueError("Model must be trained before making predictions")
         return self.model.predict_proba(X)
 
-    def log_model(self, X_val: pd.DataFrame = None, model_name: str = None):
-        """Log XGBoost model to MLflow."""
+    def log_model(
+        self, X_val: pd.DataFrame = None, model_name: str = None
+    ) -> None:
+        """Log model to MLflow with signature inference and type conversion."""
 
         if not self.is_trained:
             raise ValueError("Model must be trained before logging")
@@ -77,17 +80,20 @@ class XGBoostModel(BaseModel):
         )
 
     @classmethod
-    def load(cls, model_uri: str, config: dict):
-        """Load an XGBoost model from MLflow with proper predict_proba support."""
+    def load(cls, model_uri: str, config: Dict[str, Any]):
+        """Load model from MLflow using XGBoost-specific flavor for
+        predict_proba support."""
         try:
-            # Load using XGBoost-specific flavor for better predict_proba support
+            # Load using XGBoost-specific flavor for better predict_proba
             model = mlflow.xgboost.load_model(model_uri)
-            
+
             # Create a model instance
             instance = cls(config)
             instance.model = model
             instance.is_trained = True
-            
+
             return instance
         except Exception as e:
-            raise RuntimeError(f"Failed to load XGBoost model from {model_uri}: {e}")
+            raise RuntimeError(
+                f"Failed to load XGBoost model from {model_uri}: {e}"
+            )

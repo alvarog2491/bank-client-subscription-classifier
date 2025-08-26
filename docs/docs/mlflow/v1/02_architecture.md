@@ -162,7 +162,7 @@ src/
 │   │   └── xgboost_model.py     # XGBoostModel class
 │   ├── predict_model.py     # Prediction functions
 │   └── train_model.py       # Training functions
-
+│
 config/
 ├── config.yaml              # Main configuration file
 └── config_loader.py         # Configuration loading functions

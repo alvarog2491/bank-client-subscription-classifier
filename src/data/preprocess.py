@@ -8,11 +8,10 @@ from config.config_loader import load_config
 
 
 def preprocess_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Preprocess training and test data by
-    label encoding categorical features.
+    """Apply label encoding to categorical features and save encoders.
 
-    Returns:
-        Tuple[pd.DataFrame, pd.DataFrame]: Processed training and test data
+    Fits encoders on combined train+test data to ensure consistency.
+    Saves processed datasets and encoders to configured paths.
     """
     config = load_config()
 
@@ -56,7 +55,8 @@ def preprocess_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
         else:
             print(f"Warning: Feature '{feature}' not found in data")
 
-    # Drop specified features (only from training data to preserve id for predictions)
+    # Drop specified features (only from training data
+    # to preserve id for predictions)
     for feature in features_to_drop:
         if feature in train_df.columns:
             train_df = train_df.drop(columns=[feature])
