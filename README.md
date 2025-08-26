@@ -2,6 +2,10 @@
 
 MLFlow project for Kaggle's Playground Series S5E8 competition focused on predicting bank client subscription to term deposits.
 
+## Documentation
+
+[Full project analysis and documentation](https://alvaro-ai-ml-ds-lab.com/bank-client-subscription-classifier)
+
 ## Project Overview
 
 This project demonstrates MLFlow workflows for experiment tracking and model management using a realistic banking dataset from the Kaggle competition. The dataset contains client demographic information, previous campaign interactions, and economic indicators to predict subscription outcomes.
