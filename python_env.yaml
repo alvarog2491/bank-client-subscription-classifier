@@ -16,3 +16,6 @@ dependencies:
   - python-dotenv>=1.0.0
   - pyyaml>=6.0.0
   - tqdm>=4.66.0
+  - optuna>=3.0.0
+  - pip:
+    - optuna-integration[mlflow]>=3.0.0

@@ -3,7 +3,7 @@ import mlflow.lightgbm
 import pandas as pd
 import numpy as np
 from ..core.base_model import BaseModel
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from mlflow.models import infer_signature
 
 
@@ -19,16 +19,39 @@ class LightGBMModel(BaseModel):
         self,
         X_train: pd.DataFrame,
         y_train: pd.Series,
-        X_val: pd.DataFrame = None,
-        y_val: pd.Series = None,
+        X_val: pd.DataFrame,
+        y_val: pd.Series,
     ) -> None:
         """Train model with optional early stopping on validation data."""
+        if self.trial:
+            # Optuna hyperparameter suggestion
+            params = {
+                "n_estimators": self.trial.suggest_int(
+                    "n_estimators", 100, 1000
+                ),
+                "learning_rate": self.trial.suggest_float(
+                    "learning_rate", 0.01, 0.3
+                ),
+                "max_depth": self.trial.suggest_int("max_depth", 3, 10),
+                "num_leaves": self.trial.suggest_int("num_leaves", 10, 300),
+                "min_child_samples": self.trial.suggest_int(
+                    "min_child_samples", 5, 100
+                ),
+            }
+        else:
+            # Use provided hyperparameters or defaults
+            params = {
+                "n_estimators": self.hyperparams.get("n_estimators", 100),
+                "learning_rate": self.hyperparams.get("learning_rate", 0.1),
+                "max_depth": self.hyperparams.get("max_depth", -1),
+                "num_leaves": self.hyperparams.get("num_leaves", 31),
+                "min_child_samples": self.hyperparams.get(
+                    "min_child_samples", 20
+                ),
+            }
+
         self.model = lgb.LGBMClassifier(
-            n_estimators=self.hyperparams.get("n_estimators", 100),
-            learning_rate=self.hyperparams.get("learning_rate", 0.1),
-            max_depth=self.hyperparams.get("max_depth", -1),
-            num_leaves=self.hyperparams.get("num_leaves", 31),
-            min_child_samples=self.hyperparams.get("min_child_samples", 20),
+            **params,
             random_state=self.random_state,
             verbose=-1,
         )

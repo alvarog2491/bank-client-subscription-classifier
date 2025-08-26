@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 import pandas as pd
 import numpy as np
+import optuna
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -18,10 +19,14 @@ class BaseModel(ABC):
     """Abstract base class for all machine learning models."""
 
     def __init__(
-        self, config: Dict[str, Any], hyperparams: Dict[str, Any] = None
+        self, 
+        config: Dict[str, Any], 
+        hyperparams: Dict[str, Any] = None,
+        trial: Optional[optuna.Trial] = None
     ):
         self.config = config
         self.hyperparams = hyperparams or {}
+        self.trial = trial
         self.random_state = config.get("model", {}).get("random_state", 42)
         self.model = None
         self.is_trained = False
@@ -31,8 +36,8 @@ class BaseModel(ABC):
         self,
         X_train: pd.DataFrame,
         y_train: pd.Series,
-        X_val: pd.DataFrame = None,
-        y_val: pd.Series = None,
+        X_val: pd.DataFrame,
+        y_val: pd.Series,
     ) -> None:
         """Train the model."""
         pass

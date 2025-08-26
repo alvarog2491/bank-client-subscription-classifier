@@ -3,7 +3,7 @@ import mlflow.catboost
 import pandas as pd
 import numpy as np
 from ..core.base_model import BaseModel
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from mlflow.models import infer_signature
 
 
@@ -19,15 +19,37 @@ class CatBoostModel(BaseModel):
         self,
         X_train: pd.DataFrame,
         y_train: pd.Series,
-        X_val: pd.DataFrame = None,
-        y_val: pd.Series = None,
+        X_val: pd.DataFrame,
+        y_val: pd.Series,
     ) -> None:
         """Train model with optional early stopping on validation data."""
+        if self.trial:
+            # Optuna hyperparameter suggestion
+            params = {
+                "iterations": self.trial.suggest_int("iterations", 100, 1000),
+                "learning_rate": self.trial.suggest_float(
+                    "learning_rate", 0.01, 0.3
+                ),
+                "depth": self.trial.suggest_int("depth", 4, 10),
+                "l2_leaf_reg": self.trial.suggest_int("l2_leaf_reg", 1, 10),
+                "border_count": self.trial.suggest_int(
+                    "border_count", 32, 255
+                ),
+                "bagging_temperature": self.trial.suggest_float(
+                    "bagging_temperature", 0.0, 1.0
+                ),
+            }
+        else:
+            # Use provided hyperparameters or defaults
+            params = {
+                "iterations": self.hyperparams.get("iterations", 1000),
+                "learning_rate": self.hyperparams.get("learning_rate", 0.03),
+                "depth": self.hyperparams.get("depth", 6),
+                "l2_leaf_reg": self.hyperparams.get("l2_leaf_reg", 3),
+            }
+
         self.model = CatBoostClassifier(
-            iterations=self.hyperparams.get("iterations", 1000),
-            learning_rate=self.hyperparams.get("learning_rate", 0.03),
-            depth=self.hyperparams.get("depth", 6),
-            l2_leaf_reg=self.hyperparams.get("l2_leaf_reg", 3),
+            **params,
             random_state=self.random_state,
             verbose=False,
         )

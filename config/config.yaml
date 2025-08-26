@@ -25,7 +25,7 @@ model:
 
 mlflow:
   experiment_name: "bank-subscription-prediction"
-  tracking_uri: "sqlite:///mlflow.db"
+  tracking_uri: "http://127.0.0.1:5001"
   artifact_location: "./mlartifacts"
 
 hyperparameters:
@@ -47,3 +47,33 @@ hyperparameters:
     learning_rate: 0.1
     depth: 8
     l2_leaf_reg: 4
+
+optuna:
+  lightgbm:
+    n_estimators: [100, 1000]
+    learning_rate: [0.01, 0.3]
+    max_depth: [3, 10]
+    num_leaves: [10, 300]
+    min_child_samples: [5, 100]
+    subsample: [0.5, 1.0]
+    colsample_bytree: [0.5, 1.0]
+    reg_alpha: [0.0, 10.0]
+    reg_lambda: [0.0, 10.0]
+
+  xgboost:
+    n_estimators: [100, 1000]
+    learning_rate: [0.01, 0.3]
+    max_depth: [3, 10]
+    min_child_weight: [1, 10]
+    subsample: [0.5, 1.0]
+    colsample_bytree: [0.5, 1.0]
+    reg_alpha: [0.0, 10.0]
+    reg_lambda: [0.0, 10.0]
+
+  catboost:
+    iterations: [100, 1000]
+    learning_rate: [0.01, 0.3]
+    depth: [4, 10]
+    l2_leaf_reg: [1, 10]
+    border_count: [32, 255]
+    bagging_temperature: [0.0, 1.0]

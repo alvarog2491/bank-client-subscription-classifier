@@ -12,7 +12,9 @@ entry_points:
   train:
     parameters:
       model_type: { type: string, default: "lightgbm" }
-    command: "python -m src.models.train_model --model-type {model_type}"
+      optimize: { type: bool, default: false }
+      n_trials: { type: int, default: 10 }
+    command: "python -m src.models.train_model --model-type {model_type} --optimize {optimize} --n-trials {n_trials}"
 
   predict:
     parameters:

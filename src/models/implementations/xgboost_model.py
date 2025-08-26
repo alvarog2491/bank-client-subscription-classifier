@@ -3,7 +3,7 @@ import mlflow.xgboost
 import pandas as pd
 import numpy as np
 from ..core.base_model import BaseModel
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from mlflow.models import infer_signature
 
 
@@ -19,15 +19,33 @@ class XGBoostModel(BaseModel):
         self,
         X_train: pd.DataFrame,
         y_train: pd.Series,
-        X_val: pd.DataFrame = None,
-        y_val: pd.Series = None,
+        X_val: pd.DataFrame,
+        y_val: pd.Series,
     ) -> None:
         """Train model with training and validation evaluation sets."""
+        if self.trial:
+            # Optuna hyperparameter suggestion
+            params = {
+                "n_estimators": self.trial.suggest_int("n_estimators", 100, 1000),
+                "learning_rate": self.trial.suggest_float("learning_rate", 0.01, 0.3),
+                "max_depth": self.trial.suggest_int("max_depth", 3, 10),
+                "min_child_weight": self.trial.suggest_int("min_child_weight", 1, 10),
+                "subsample": self.trial.suggest_float("subsample", 0.5, 1.0),
+                "colsample_bytree": self.trial.suggest_float("colsample_bytree", 0.5, 1.0),
+                "reg_alpha": self.trial.suggest_float("reg_alpha", 0.0, 10.0),
+                "reg_lambda": self.trial.suggest_float("reg_lambda", 0.0, 10.0),
+            }
+        else:
+            # Use provided hyperparameters or defaults
+            params = {
+                "n_estimators": self.hyperparams.get("n_estimators", 100),
+                "learning_rate": self.hyperparams.get("learning_rate", 0.3),
+                "max_depth": self.hyperparams.get("max_depth", 6),
+                "min_child_weight": self.hyperparams.get("min_child_weight", 1),
+            }
+            
         self.model = xgb.XGBClassifier(
-            n_estimators=self.hyperparams.get("n_estimators", 100),
-            learning_rate=self.hyperparams.get("learning_rate", 0.3),
-            max_depth=self.hyperparams.get("max_depth", 6),
-            min_child_weight=self.hyperparams.get("min_child_weight", 1),
+            **params,
             random_state=self.random_state,
             eval_metric="logloss",
         )

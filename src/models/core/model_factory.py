@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from typing import Dict, Any, Union, Optional
+import optuna
 from .base_model import BaseModel
 from ..implementations.lightgbm_model import LightGBMModel
 from ..implementations.xgboost_model import XGBoostModel
@@ -19,9 +20,16 @@ class ModelFactory:
         cls,
         model_type: str,
         config: Dict[str, Any],
-        hyperparams: Dict[str, Any] = None,
+        hyperparams: Optional[Union[Dict[str, Any], optuna.Trial]] = None,
+        trial: Optional[optuna.Trial] = None,
     ) -> BaseModel:
         """Create model instance using factory pattern.
+
+        Args:
+            model_type: Type of model to create
+            config: Configuration dictionary
+            hyperparams: Either hyperparameters dict or Optuna trial for optimization
+            trial: Optuna trial (alternative way to pass trial)
 
         Raises:
             ValueError: If model_type is not supported
@@ -33,8 +41,12 @@ class ModelFactory:
                 f"Supported models: {supported_models}"
             )
 
+        # Handle trial parameter - support both ways for flexibility
+        effective_trial = trial if trial is not None else hyperparams if isinstance(hyperparams, optuna.Trial) else None
+        effective_hyperparams = hyperparams if not isinstance(hyperparams, optuna.Trial) else None
+
         model_class = cls._models[model_type]
-        return model_class(config, hyperparams)
+        return model_class(config, effective_hyperparams, effective_trial)
 
     @classmethod
     def get_supported_models(cls) -> list:
