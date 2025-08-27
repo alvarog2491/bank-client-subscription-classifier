@@ -14,6 +14,23 @@ mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./
 http://localhost:5001
 ```
 
+## Run MLFlow project entry points
+
+[Official Documentation: MLflow Projects](https://mlflow.org/docs/latest/projects.html)
+
+```bash
+# Run MLFLow CLI entry points
+mlflow run . -e data_preprocessing
+mlflow run . -e train -P model_type=lightgbm # before Optuna
+mlflow run . -e train -P model-type=lightgbm -P optimize=True -P n-trials=3 # After Optuna
+mlflow run . -e predict -P model_uri="models:/ModelName/Production"
+mlflow run . -e main
+
+# Python 
+python -m src.models.train_model --model-type lightgbm # before Optuna
+python -m src.models.train_model --model-type lightgbm --optimize True --n-trials 20 # After Optuna
+```
+
 ## Basic Experiment Tracking
 
 [Official Documentation: MLflow Tracking](https://mlflow.org/docs/latest/tracking.html)
@@ -41,21 +58,6 @@ with mlflow.start_run(run_name="run-name"):
     
     # Log artifacts
     mlflow.log_artifact("confusion_matrix.png")
-```
-
-## Run MLFlow project entry points
-
-[Official Documentation: MLflow Projects](https://mlflow.org/docs/latest/projects.html)
-
-```bash
-# Run MLFLow entry points
-mlflow run . -e data_preprocessing
-mlflow run . -e train -P model_type=lightgbm
-mlflow run . -e predict -P model_uri="models:/ModelName/Production"
-mlflow run . -e main
-
-# Python 
-python -m src.models.train_model --model-type lightgbm
 ```
 
 ## Model Registry

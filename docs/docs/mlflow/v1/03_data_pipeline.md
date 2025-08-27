@@ -10,7 +10,8 @@ The data pipeline consists of data loading and preprocessing stages.
 ## Data Loading
 
 ### Implementation
-Located in `src/data/load_data.py`
+
+**File**: `src/data/load_data.py`
 
 ### Functions Available
 - `load_train_data()` - Loads training data from raw CSV
@@ -32,7 +33,8 @@ The function prints data shapes and returns both datasets as pandas DataFrames.
 ## Data Preprocessing  
 
 ### Implementation
-Located in `src/data/preprocess.py`
+
+**File**: `src/data/preprocess.py`
 
 ### MLFlow Entry Point
 ```bash

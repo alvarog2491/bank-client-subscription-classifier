@@ -15,7 +15,7 @@ nav:
       - Preprocessing: data/preprocessing.md
   - MLFlow Journey:
       - Quick Reference: mlflow/guide.md
-      - V1.0 - Initial Implementation:
+      - V1 - Initial Implementation:
           - Overview: mlflow/v1/01_overview.md
           - Project Architecture: mlflow/v1/02_architecture.md
           - Data Pipeline: mlflow/v1/03_data_pipeline.md
@@ -24,6 +24,13 @@ nav:
           - Generate test predictions: mlflow/v1/06_model_inference.md
           - Upload predictions: mlflow/v1/07_upload_predictions.md
           - Conclusions: mlflow/v1/08_conclusions.md
+      - V2 - Hyperparameter Optimization with Optuna:
+          - Overview: mlflow/v2/01_overview.md
+          - Project Architecture: mlflow/v2/02_architecture.md
+          - Model Training: mlflow/v2/04_model_training.md
+          - Picking Best Model: mlflow/v2/05_best_model.md
+          - Upload Predictions: mlflow/v2/07_upload_predictions.md
+          - Conclusions: mlflow/v2/08_conclusions.md
 
 theme:
   name: material

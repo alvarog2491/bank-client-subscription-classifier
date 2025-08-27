@@ -57,10 +57,10 @@ The pipeline uses explicit validation at each step, failing fast with clear erro
 ```bash
 # Direct Python execution (Example selecting model and version)
 python -m src.models.predict_model \
-    --model-uri models:/BankSubscriptionClassifier-xgboost/6 \
-    --model-type xgboost \
-    --input-path data/processed/test_processed.csv \
-    --output-path data/predictions/xgboost_predictions.csv
+      --model-uri models:/bank-client-subscription-classifier-xgboost/10 \
+      --model-type xgboost \
+      --input-path data/processed/test_processed.csv \
+      --output-path data/predictions/xgboost_predictions.csv
 
 # MLflow entry point (Exmample selecting run directly)
 mlflow run . -e predict \

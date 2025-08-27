@@ -7,7 +7,8 @@ The model training system implements three gradient boosting algorithms with har
 ## Architecture
 
 ### Base Model Class
-Located in `src/models/core/base_model.py`
+
+**File**: `src/models/core/base_model.py`
 
 ```python
 from abc import ABC, abstractmethod
@@ -99,7 +100,8 @@ class BaseModel(ABC):
 ```
 
 ### Model Factory
-Located in `src/models/core/model_factory.py`
+
+**File**: `src/models/core/model_factory.py`
 
 The ModelFactory provides both model creation and loading capabilities:
 
@@ -144,7 +146,8 @@ class ModelFactory:
 ## Model Implementations
 
 ### 1. LightGBM Model
-Located in `src/models/implementations/lightgbm_model.py`
+
+**File**: `src/models/implementations/lightgbm_model.py`
 
 **Hyperparameters (from config.yaml):**
 ```yaml
@@ -198,8 +201,9 @@ def load(cls, model_uri: str, config: Dict[str, Any]):
         raise RuntimeError(f"Failed to load LightGBM model from {model_uri}: {e}")
 ```
 
-### 2. XGBoost Model  
-Located in `src/models/implementations/xgboost_model.py`
+### 2. XGBoost Model
+
+**File**: `src/models/implementations/xgboost_model.py`
 
 **Hyperparameters (from config.yaml):**
 ```yaml
@@ -248,7 +252,8 @@ def load(cls, model_uri: str, config: Dict[str, Any]):
 ```
 
 ### 3. CatBoost Model
-Located in `src/models/implementations/catboost_model.py`
+
+**File**: `src/models/implementations/catboost_model.py`
 
 **Hyperparameters (from config.yaml):**
 ```yaml
@@ -302,7 +307,8 @@ def load(cls, model_uri: str, config: Dict[str, Any]):
 ```
 
 ## Training Process
-Located in `src/models/train_model.py`
+
+**File**: `src/models/train_model.py`
 
 ```python
 def train_model(model_type: str) -> str:
