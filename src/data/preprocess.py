@@ -242,6 +242,108 @@ def apply_numerical_feature_enhancements(
     return train_df, test_df
 
 
+def create_previous_success_duration_interactions(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Create interactions between previous campaign success and call duration."""
+    print("  Creating previous success + duration interactions...")
+    
+    # Previous success with high engagement duration
+    train_df["prev_success_high_engagement"] = (
+        train_df["previous_success"] * train_df["duration_high_engagement"]
+    )
+    test_df["prev_success_high_engagement"] = (
+        test_df["previous_success"] * test_df["duration_high_engagement"]
+    )
+    
+    # Previous success with duration quartiles
+    train_df["prev_success_duration_log"] = (
+        train_df["previous_success"] * train_df["duration_log"]
+    )
+    test_df["prev_success_duration_log"] = (
+        test_df["previous_success"] * test_df["duration_log"]
+    )
+    
+    return train_df, test_df
+
+
+def create_job_education_interactions(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Create professional segment interactions between job and education."""
+    print("  Creating job + education interactions...")
+    
+    # High education professionals (management, technician with higher education)
+    train_df["high_ed_professional"] = (
+        ((train_df["job"].isin([1, 8])) & (train_df["education"] == 3)) |  # management, technician with tertiary
+        ((train_df["job"] == 9) & (train_df["education"].isin([2, 3])))     # unemployed with secondary/tertiary
+    ).astype(int)
+    
+    test_df["high_ed_professional"] = (
+        ((test_df["job"].isin([1, 8])) & (test_df["education"] == 3)) |
+        ((test_df["job"] == 9) & (test_df["education"].isin([2, 3])))
+    ).astype(int)
+    
+    # Blue collar with higher education (potential career transition)
+    train_df["blue_collar_educated"] = (
+        (train_df["job"] == 0) & (train_df["education"].isin([2, 3]))  # blue-collar with secondary/tertiary
+    ).astype(int)
+    
+    test_df["blue_collar_educated"] = (
+        (test_df["job"] == 0) & (test_df["education"].isin([2, 3]))
+    ).astype(int)
+    
+    return train_df, test_df
+
+
+def create_seasonal_contact_interactions(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Create seasonal communication effectiveness interactions."""
+    print("  Creating month + contact interactions...")
+    
+    # High success months with cellular contact
+    train_df["peak_month_cellular"] = (
+        (train_df["month_success_group"] == 0) & (train_df["contact"] == 0)  # high success month + cellular
+    ).astype(int)
+    
+    test_df["peak_month_cellular"] = (
+        (test_df["month_success_group"] == 0) & (test_df["contact"] == 0)
+    ).astype(int)
+    
+    # Medium success months with optimal contact type
+    train_df["medium_month_contact"] = (
+        (train_df["month_success_group"] == 2) & (train_df["contact"] != 2)  # medium month + not unknown contact
+    ).astype(int)
+    
+    test_df["medium_month_contact"] = (
+        (test_df["month_success_group"] == 2) & (test_df["contact"] != 2)
+    ).astype(int)
+    
+    return train_df, test_df
+
+
+def apply_feature_interactions(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Apply feature interactions based on domain insights."""
+    print("Applying feature interactions...")
+    
+    train_df, test_df = create_previous_success_duration_interactions(train_df, test_df)
+    train_df, test_df = create_job_education_interactions(train_df, test_df)
+    train_df, test_df = create_seasonal_contact_interactions(train_df, test_df)
+    
+    print("Feature interactions completed:")
+    print("  - prev_success_high_engagement: previous success with high engagement calls")
+    print("  - prev_success_duration_log: previous success weighted by call duration")
+    print("  - high_ed_professional: professional segments with higher education")
+    print("  - blue_collar_educated: blue-collar workers with higher education")
+    print("  - peak_month_cellular: high success months with cellular contact")
+    print("  - medium_month_contact: medium success months with optimal contact")
+    
+    return train_df, test_df
+
+
 def preprocess_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Apply label encoding to categorical features and save encoders.
 
@@ -263,6 +365,11 @@ def preprocess_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
 
     # Apply numerical feature enhancements (step 4)
     train_df, test_df = apply_numerical_feature_enhancements(
+        train_df, test_df
+    )
+
+    # Apply feature interactions (step 5)
+    train_df, test_df = apply_feature_interactions(
         train_df, test_df
     )
 
