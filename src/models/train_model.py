@@ -17,7 +17,7 @@ def optimize_hyperparameters(
     X_val: pd.DataFrame,
     y_val: pd.Series,
     config: Dict[str, Any],
-    n_trials: int
+    n_trials: int,
 ) -> Tuple[Dict[str, Any], BaseModel, Dict[str, float]]:
     """Run hyperparameter optimization using Optuna with MLFlow child runs."""
 
@@ -123,8 +123,12 @@ def train_model(
             model_instance.train(X_train, y_train, X_val, y_val)
             metrics = model_instance.evaluate(X_val, y_val)
 
-        # Log metrics
-        model_instance.log_metrics(metrics)
+        # Perform K-fold cross-validation for robust evaluation
+        cv_folds = config["model"]["cv_folds"]
+        cv_results = model_instance.cross_validate(X, y, cv_folds)
+
+        # Log only cross-validation metrics
+        model_instance.log_metrics(cv_results)
 
         # Log and Register model
         model_name = f"{config['project']['name']}-{model_type}"

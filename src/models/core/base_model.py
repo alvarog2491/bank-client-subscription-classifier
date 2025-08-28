@@ -12,6 +12,7 @@ from sklearn.metrics import (
     confusion_matrix,
     classification_report,
 )
+from sklearn.model_selection import StratifiedKFold
 import mlflow
 
 
@@ -19,10 +20,10 @@ class BaseModel(ABC):
     """Abstract base class for all machine learning models."""
 
     def __init__(
-        self, 
-        config: Dict[str, Any], 
+        self,
+        config: Dict[str, Any],
         hyperparams: Dict[str, Any] = None,
-        trial: Optional[optuna.Trial] = None
+        trial: Optional[optuna.Trial] = None,
     ):
         self.config = config
         self.hyperparams = hyperparams or {}
@@ -120,6 +121,109 @@ class BaseModel(ABC):
         print("=" * 50)
 
         return metrics
+
+    def cross_validate(
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        cv_folds: int = 5,
+        scoring: str = "roc_auc",
+    ) -> Dict[str, float]:
+        """Perform K-fold cross-validation and return performance metrics."""
+        print(f"Performing {cv_folds}-fold cross-validation...")
+
+        # Create stratified K-fold to maintain class distribution
+        skf = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=42)
+
+        # Initialize lists to store metrics for each fold
+        fold_accuracies = []
+        fold_precisions = []
+        fold_recalls = []
+        fold_f1s = []
+        fold_aucs = []
+
+        fold_results = []
+
+        for fold, (train_idx, val_idx) in enumerate(skf.split(X, y), 1):
+            print(f"  Fold {fold}/{cv_folds}...")
+
+            # Split data for this fold
+            X_train_fold = X.iloc[train_idx]
+            X_val_fold = X.iloc[val_idx]
+            y_train_fold = y.iloc[train_idx]
+            y_val_fold = y.iloc[val_idx]
+
+            # Train model on fold
+            self.train(X_train_fold, y_train_fold, X_val_fold, y_val_fold)
+
+            # Evaluate on validation set
+            fold_metrics = self.evaluate(X_val_fold, y_val_fold)
+
+            # Store metrics
+            fold_accuracies.append(fold_metrics["accuracy"])
+            fold_precisions.append(fold_metrics["precision"])
+            fold_recalls.append(fold_metrics["recall"])
+            fold_f1s.append(fold_metrics["f1_score"])
+            if "auc" in fold_metrics:
+                fold_aucs.append(fold_metrics["auc"])
+
+            fold_results.append(
+                {
+                    "fold": fold,
+                    "accuracy": fold_metrics["accuracy"],
+                    "precision": fold_metrics["precision"],
+                    "recall": fold_metrics["recall"],
+                    "auc": fold_metrics.get("auc", None),
+                }
+            )
+
+        # Calculate mean and std for each metric
+        cv_results = {
+            "cv_accuracy_mean": np.mean(fold_accuracies),
+            "cv_accuracy_std": np.std(fold_accuracies),
+            "cv_precision_mean": np.mean(fold_precisions),
+            "cv_precision_std": np.std(fold_precisions),
+            "cv_recall_mean": np.mean(fold_recalls),
+            "cv_recall_std": np.std(fold_recalls),
+            "cv_f1_mean": np.mean(fold_f1s),
+            "cv_f1_std": np.std(fold_f1s),
+        }
+
+        if fold_aucs:
+            cv_results.update(
+                {
+                    "cv_auc_mean": np.mean(fold_aucs),
+                    "cv_auc_std": np.std(fold_aucs),
+                }
+            )
+
+        # Print results summary
+        print("\nCROSS-VALIDATION RESULTS")
+        print("=" * 60)
+        print(
+            f"Accuracy:  {cv_results['cv_accuracy_mean']:.4f} ± "
+            f"{cv_results['cv_accuracy_std']:.4f}"
+        )
+        print(
+            f"Precision: {cv_results['cv_precision_mean']:.4f} ± "
+            f"{cv_results['cv_precision_std']:.4f}"
+        )
+        print(
+            f"Recall:    {cv_results['cv_recall_mean']:.4f} ± "
+            f"{cv_results['cv_recall_std']:.4f}"
+        )
+        print(
+            f"F1 Score:  {cv_results['cv_f1_mean']:.4f} ± "
+            f"{cv_results['cv_f1_std']:.4f}"
+        )
+        if "cv_auc_mean" in cv_results:
+            print(
+                f"AUC:       {cv_results['cv_auc_mean']:.4f} ± "
+                f"{cv_results['cv_auc_std']:.4f}"
+            )
+        print("=" * 60)
+
+        return cv_results
 
     def log_metrics(self, metrics: Dict[str, float]) -> None:
         """Log numerical metrics to MLflow (excludes complex objects)."""

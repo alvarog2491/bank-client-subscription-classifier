@@ -1,18 +1,15 @@
 # MLflow V3 Overview
 
-## Foundation Complete
+## K-fold Cross-Validation Implementation
 
-With V2, the MLflow infrastructure is now stable and reliable. Time to focus on feature engineering and data exploration.
+V3 implements K-fold cross-validation on the best model found by Optuna hyperparameter optimization from V2.
 
-## Approach
+## What is K-fold Cross-Validation?
 
-V3 implements systematic feature engineering based on EDA insights. Each improvement is tracked separately to measure individual impact on model performance.
+K-fold cross-validation splits the dataset into k equal parts (folds). The model is trained k times, each time using k-1 folds for training and 1 fold for validation. This provides more reliable performance estimates by testing the model on multiple data splits rather than a single validation set.
 
-Pipeline structure:
-```
-Raw Data -> Duration Treatment -> Categorical Engineering -> Numerical Enhancement -> Feature Interactions -> Model Training
-```
+V3 uses stratified 5-fold cross-validation (defined in config file) which maintains the same class distribution across all folds, important for imbalanced datasets.
 
-## Class Imbalance Handling
+## Implementation
 
-The first priority is addressing the high number of false negatives identified in [V2 best model results](../v2/05_best_model.md). Added `scale_pos_weight` parameter to XGBoost hyperparameter optimization (range 1.0-15.0) to handle the 7.3:1 class imbalance by giving more weight to positive subscription cases.
+After Optuna finds the best hyperparameters, K-fold cross-validation is applied to evaluate the optimized model's performance across different data splits, this evaluation is performed only on the best model due to computational resource limitations. Only cross-validation metrics are logged to MLflow. 

@@ -31,9 +31,14 @@ nav:
           - Picking Best Model: mlflow/v2/05_best_model.md
           - Upload Predictions: mlflow/v2/07_upload_predictions.md
           - Conclusions: mlflow/v2/08_conclusions.md
-      - V3 - Feature engineering:
+      - V3 - KFold cross validation:
           - Overview: mlflow/v3/01_overview.md
-          - Duration engineering: mlflow/v3/02_duration_feature_treatment.md
+          - Project Architecture: mlflow/v3/02_architecture.md
+          - Model Training: mlflow/v3/03_model_training.md
+      - V4 - Feature engineering:
+          - Overview: mlflow/v4/01_overview.md
+          - Duration engineering: mlflow/v4/02_duration_feature_treatment.md
+          - Categorical engineering: mlflow/v4/03_categorical_feature_engineering.md
 
 theme:
   name: material
