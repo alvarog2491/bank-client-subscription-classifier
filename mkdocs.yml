@@ -38,6 +38,7 @@ nav:
           - Overview: mlflow/v4/01_overview.md
           - Duration engineering: mlflow/v4/02_duration_feature_treatment.md
           - Categorical engineering: mlflow/v4/03_categorical_feature_engineering.md
+          - Numerical engineering: mlflow/v4/04_numerical_feature_enhancements.md
 
 theme:
   name: material

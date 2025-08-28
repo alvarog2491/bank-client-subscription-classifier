@@ -173,6 +173,75 @@ def apply_duration_feature_treatment(
     return train_df, test_df
 
 
+def create_balance_transformations(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Apply arcsinh transformation to balance feature."""
+    print("  Creating balance transformations...")
+    
+    train_df["balance_arcsinh"] = np.arcsinh(train_df["balance"])
+    test_df["balance_arcsinh"] = np.arcsinh(test_df["balance"])
+    
+    return train_df, test_df
+
+
+def create_age_segments(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Create age demographic segments."""
+    print("  Creating age segments...")
+    
+    age_bins = [0, 30, 50, 65, float("inf")]
+    age_labels = ["young", "middle_aged", "mature", "senior"]
+    
+    train_df["age_group"] = pd.cut(
+        train_df["age"], bins=age_bins, labels=age_labels, include_lowest=True
+    )
+    test_df["age_group"] = pd.cut(
+        test_df["age"], bins=age_bins, labels=age_labels, include_lowest=True
+    )
+    
+    return train_df, test_df
+
+
+def create_campaign_patterns(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Create campaign frequency optimization features."""
+    print("  Creating campaign patterns...")
+    
+    train_df["optimal_contact"] = (
+        (train_df["campaign"] >= 2) & (train_df["campaign"] <= 3)
+    ).astype(int)
+    test_df["optimal_contact"] = (
+        (test_df["campaign"] >= 2) & (test_df["campaign"] <= 3)
+    ).astype(int)
+    
+    train_df["over_contacted"] = (train_df["campaign"] > 3).astype(int)
+    test_df["over_contacted"] = (test_df["campaign"] > 3).astype(int)
+    
+    return train_df, test_df
+
+
+def apply_numerical_feature_enhancements(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Apply numerical feature enhancements based on EDA insights."""
+    print("Applying numerical feature enhancements...")
+    
+    train_df, test_df = create_balance_transformations(train_df, test_df)
+    train_df, test_df = create_age_segments(train_df, test_df)
+    train_df, test_df = create_campaign_patterns(train_df, test_df)
+    
+    print("Numerical feature enhancements completed:")
+    print("  - balance_arcsinh: arcsinh-transformed balance")
+    print("  - age_group: demographic segments (young/middle_aged/mature/senior)")
+    print("  - optimal_contact: optimal campaign frequency flag (2-3 contacts)")
+    print("  - over_contacted: excessive contact attempts flag (>3)")
+    
+    return train_df, test_df
+
+
 def preprocess_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Apply label encoding to categorical features and save encoders.
 
@@ -192,6 +261,11 @@ def preprocess_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
         train_df, test_df
     )
 
+    # Apply numerical feature enhancements (step 4)
+    train_df, test_df = apply_numerical_feature_enhancements(
+        train_df, test_df
+    )
+
     # Get features configuration from config
     categorical_features = config["features"]["categorical_features"]
     # Add new engineered features to categorical features for encoding
@@ -199,6 +273,7 @@ def preprocess_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
         "duration_bin",
         "job_conversion_group",
         "month_success_group",
+        "age_group",
     ]
     features_to_drop = config["features"].get("features_to_drop", [])
 

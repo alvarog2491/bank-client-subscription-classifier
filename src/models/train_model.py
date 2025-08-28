@@ -84,6 +84,12 @@ def train_model(
     target_col = config["data"]["target_column"]
     X = train_data.drop([target_col], axis=1)
     y = train_data[target_col]
+    
+    # Print training features
+    print(f"\nTraining Features ({len(X.columns)}):")
+    for i, feature in enumerate(sorted(X.columns), 1):
+        print(f"  {i:2d}. {feature}")
+    print()
 
     # Split data
     test_size = config["model"]["test_size"]

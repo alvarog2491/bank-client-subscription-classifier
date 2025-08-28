@@ -4,6 +4,10 @@
 
 With V2, the MLflow infrastructure is now stable and reliable. Time to focus on feature engineering and data exploration.
 
+!!! info "XGboost as base model"
+    XGBoost was identified as the most appropriate model for this dataset through previous experiments. All trials in this section will be conducted with XGBoost only, as testing all models would be time-intensive. Focus is on optimizing XGBoost performance with 20 trials per run to achieve the best results efficiently.
+
+
 ## Approach
 
 V3 implements systematic feature engineering based on EDA insights. Each improvement is tracked separately to measure individual impact on model performance.
