@@ -34,7 +34,6 @@ nav:
       - V3 - KFold cross validation:
           - Overview: mlflow/v3/01_overview.md
           - Project Architecture: mlflow/v3/02_architecture.md
-          - Model Training: mlflow/v3/03_model_training.md
       - V4 - Feature engineering:
           - Overview: mlflow/v4/01_overview.md
           - Duration engineering: mlflow/v4/02_duration_feature_treatment.md

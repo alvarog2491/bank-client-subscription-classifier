@@ -88,7 +88,7 @@ def apply_duration_feature_treatment(train_df: pd.DataFrame, test_df: pd.DataFra
 ## Results
 
 ### MLflow Performance
-Duration feature treatment shows strong performance with minimal improvement over baseline:
+Duration feature treatment results:
 
 <a href="../images/02_mlflow_duration.png" target="_blank">
   <img src="../images/02_mlflow_duration.png" alt="MLflow Results - Duration Treatment" width="800" style="cursor: pointer; border: 1px solid #ddd; border-radius: 4px; transition: 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
@@ -100,10 +100,10 @@ Duration feature treatment shows strong performance with minimal improvement ove
 **K-Fold Cross-Validation (5 folds):**
 - **Average AUC: 0.9686**
 
-Results demonstrate consistent performance with the cross-validation showing minimal variance. The improvement over the baseline model is marginal, indicating that while duration feature engineering provides value, the gains are incremental rather than transformative.
+Results show consistent performance with low variance across cross-validation folds. The improvement over baseline is marginal.
 
 ### Classification Metrics
-Detailed performance breakdown shows improved recall at the cost of precision:
+Performance comparison with baseline results:
 
 <a href="../images/02_mlflow_duration_metrics.png" target="_blank">
   <img src="../images/02_mlflow_duration_metrics.png" alt="MLflow Duration Treatment Metrics" width="800" style="cursor: pointer; border: 1px solid #ddd; border-radius: 4px; transition: 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
@@ -111,10 +111,10 @@ Detailed performance breakdown shows improved recall at the cost of precision:
 
 - **False Positives**: Increased from 3,702 to 5,374 (+1,672)
 - **False Negatives**: Reduced from 6,187 to 4,409 (-1,778)
-- **Trade-off**: Better at identifying actual subscribers (improved recall) with increased false alarms
+- **Trade-off**: Higher recall but more false positives
 
 ### Kaggle Competition Results
-The improved model translated to strong competition performance:
+Competition submission results:
 
 <a href="../images/02_duration_treatment_kaggle_submit.png" target="_blank">
   <img src="../images/02_duration_treatment_kaggle_submit.png" alt="Kaggle Submission - Duration Treatment" width="800" style="cursor: pointer; border: 1px solid #ddd; border-radius: 4px; transition: 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
@@ -122,4 +122,3 @@ The improved model translated to strong competition performance:
 
 - **Competition Score**: 0.969
 - **Leaderboard Position**: 1170
-- **Improvement**: Duration engineering provides measurable competitive advantage

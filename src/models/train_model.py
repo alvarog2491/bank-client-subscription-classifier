@@ -123,11 +123,14 @@ def train_model(
             model_instance.train(X_train, y_train, X_val, y_val)
             metrics = model_instance.evaluate(X_val, y_val)
 
+        # Log individual evaluation metrics (including confusion matrix)
+        model_instance.log_metrics(metrics)
+        
         # Perform K-fold cross-validation for robust evaluation
         cv_folds = config["model"]["cv_folds"]
         cv_results = model_instance.cross_validate(X, y, cv_folds)
 
-        # Log only cross-validation metrics
+        # Log cross-validation metrics
         model_instance.log_metrics(cv_results)
 
         # Log and Register model

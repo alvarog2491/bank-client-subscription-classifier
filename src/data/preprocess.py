@@ -8,37 +8,168 @@ from .load_data import load_data
 from config.config_loader import load_config
 
 
-def apply_duration_feature_treatment(train_df: pd.DataFrame, test_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def create_job_conversion_groups(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Create job category groups based on conversion rates from EDA."""
+    print("  Creating job conversion groups...")
+
+    high_conversion_jobs = ["student", "retired"]  # 34.1%, 30.8%
+    medium_conversion_jobs = [
+        "self-employed",
+        "unemployed",
+        "management",
+    ]  # ~12-15%
+
+    def categorize_job(job):
+        if job in high_conversion_jobs:
+            return "high_conversion"
+        elif job in medium_conversion_jobs:
+            return "medium_conversion"
+        else:
+            return "low_conversion"
+
+    train_df["job_conversion_group"] = train_df["job"].map(categorize_job)
+    test_df["job_conversion_group"] = test_df["job"].map(categorize_job)
+
+    return train_df, test_df
+
+
+def create_monthly_success_patterns(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Create monthly success pattern features based on EDA seasonal analysis."""
+    print("  Creating monthly success patterns...")
+
+    high_success_months = ["mar"]  # 57.1% success
+    medium_success_months = ["sep", "oct", "dec"]  # ~15-20% success
+
+    def categorize_month(month):
+        if month in high_success_months:
+            return "high_success"
+        elif month in medium_success_months:
+            return "medium_success"
+        else:
+            return "low_success"
+
+    train_df["month_success_group"] = train_df["month"].map(categorize_month)
+    test_df["month_success_group"] = test_df["month"].map(categorize_month)
+
+    return train_df, test_df
+
+
+def create_previous_campaign_features(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Create previous campaign success features (76.4% conversion rate)."""
+    print("  Creating previous campaign features...")
+
+    train_df["previous_success"] = (train_df["poutcome"] == "success").astype(
+        int
+    )
+    test_df["previous_success"] = (test_df["poutcome"] == "success").astype(
+        int
+    )
+
+    return train_df, test_df
+
+
+def create_high_value_segments(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Create high-value customer segment flags."""
+    print("  Creating high-value segments...")
+
+    high_conversion_jobs = ["student", "retired"]
+    train_df["high_value_segment"] = (
+        train_df["job"].isin(high_conversion_jobs).astype(int)
+    )
+    test_df["high_value_segment"] = (
+        test_df["job"].isin(high_conversion_jobs).astype(int)
+    )
+
+    return train_df, test_df
+
+
+def apply_categorical_feature_engineering(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Apply categorical feature engineering based on EDA insights.
+
+    Orchestrates all categorical feature engineering steps:
+    - Job category groups by conversion rates
+    - Seasonal/monthly success patterns
+    - Previous campaign success encoding
+    - High-value customer segments
+    """
+    print("Applying categorical feature engineering...")
+
+    # Apply each categorical feature engineering step
+    train_df, test_df = create_job_conversion_groups(train_df, test_df)
+    train_df, test_df = create_monthly_success_patterns(train_df, test_df)
+    train_df, test_df = create_previous_campaign_features(train_df, test_df)
+    train_df, test_df = create_high_value_segments(train_df, test_df)
+
+    print("Categorical feature engineering completed:")
+    print(
+        "  - job_conversion_group: high/medium/low conversion job categories"
+    )
+    print("  - month_success_group: high/medium/low success month categories")
+    print("  - previous_success: binary flag for previous campaign success")
+    print("  - high_value_segment: binary flag for high-conversion jobs")
+
+    return train_df, test_df
+
+
+def apply_duration_feature_treatment(
+    train_df: pd.DataFrame, test_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Apply duration feature treatment based on EDA insights.
-    
+
     Duration shows strongest correlation (r=0.519) with target:
     - Subscribers: avg 525 seconds
     - Non-subscribers: avg 212 seconds
-    
+
     Creates duration bins and features to capture this relationship.
     """
     print("Applying duration feature treatment...")
-    
+
     # Create duration bins based on quartiles and business logic
-    duration_bins = [0, 120, 300, 600, float('inf')]
-    duration_labels = ['very_short', 'short', 'medium', 'long']
-    
-    train_df['duration_bin'] = pd.cut(train_df['duration'], bins=duration_bins, labels=duration_labels, include_lowest=True)
-    test_df['duration_bin'] = pd.cut(test_df['duration'], bins=duration_bins, labels=duration_labels, include_lowest=True)
-    
+    duration_bins = [0, 120, 300, 600, float("inf")]
+    duration_labels = ["very_short", "short", "medium", "long"]
+
+    train_df["duration_bin"] = pd.cut(
+        train_df["duration"],
+        bins=duration_bins,
+        labels=duration_labels,
+        include_lowest=True,
+    )
+    test_df["duration_bin"] = pd.cut(
+        test_df["duration"],
+        bins=duration_bins,
+        labels=duration_labels,
+        include_lowest=True,
+    )
+
     # Create log transformation of duration to handle skewness
-    train_df['duration_log'] = np.log1p(train_df['duration'])
-    test_df['duration_log'] = np.log1p(test_df['duration'])
-    
+    train_df["duration_log"] = np.log1p(train_df["duration"])
+    test_df["duration_log"] = np.log1p(test_df["duration"])
+
     # Create binary feature for high engagement calls (>300 seconds)
-    train_df['duration_high_engagement'] = (train_df['duration'] > 300).astype(int)
-    test_df['duration_high_engagement'] = (test_df['duration'] > 300).astype(int)
-    
+    train_df["duration_high_engagement"] = (train_df["duration"] > 300).astype(
+        int
+    )
+    test_df["duration_high_engagement"] = (test_df["duration"] > 300).astype(
+        int
+    )
+
     print("Duration features created:")
-    print("  - duration_bin: categorical bins (very_short, short, medium, long)")
+    print(
+        "  - duration_bin: categorical bins (very_short, short, medium, long)"
+    )
     print("  - duration_log: log-transformed duration")
     print("  - duration_high_engagement: binary flag for calls > 300 seconds")
-    
+
     return train_df, test_df
 
 
@@ -56,10 +187,19 @@ def preprocess_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
     # Apply duration feature treatment (step 2)
     train_df, test_df = apply_duration_feature_treatment(train_df, test_df)
 
+    # Apply categorical feature engineering (step 3)
+    train_df, test_df = apply_categorical_feature_engineering(
+        train_df, test_df
+    )
+
     # Get features configuration from config
     categorical_features = config["features"]["categorical_features"]
-    # Add new duration features to categorical features for encoding
-    categorical_features = categorical_features + ["duration_bin"]
+    # Add new engineered features to categorical features for encoding
+    categorical_features = categorical_features + [
+        "duration_bin",
+        "job_conversion_group",
+        "month_success_group",
+    ]
     features_to_drop = config["features"].get("features_to_drop", [])
 
     print(f"Label encoding categorical features: {categorical_features}")

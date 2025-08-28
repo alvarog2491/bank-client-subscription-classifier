@@ -1,0 +1,3 @@
+  - Balance treatment: Wide range (-8,019 to 99,717) needs scaling/binning
+  - Campaign frequency: Optimal at 2-3 contacts, diminishing returns after
+  - Age binning: Group into meaningful demographic segments
