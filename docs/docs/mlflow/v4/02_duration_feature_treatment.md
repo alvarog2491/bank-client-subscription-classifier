@@ -15,6 +15,7 @@ Duration emerges as the strongest predictor from the EDA analysis, showing the h
 
 ### 1. Duration Binning
 Created categorical bins based on engagement patterns:
+
 - `very_short` (0-120s): Quick rejections
 - `short` (120-300s): Standard interactions  
 - `medium` (300-600s): Engaged prospects
@@ -58,6 +59,25 @@ def apply_duration_feature_treatment(train_df: pd.DataFrame, test_df: pd.DataFra
 | `duration_log` | Numerical | Log-transformed duration to handle skewness |
 | `duration_high_engagement` | Binary | Flag for calls > 300 seconds |
 
+## Data Transformation Example
+
+### Before Processing
+| duration | y | Description |
+|----------|---|-------------|
+| 117      | 0 | 117 seconds, no subscription |
+| 185      | 0 | 185 seconds, no subscription |
+| 111      | 0 | 111 seconds, no subscription |
+| 10       | 0 | 10 seconds, no subscription |
+
+### After Processing
+| duration | duration_bin | duration_log | duration_high_engagement | y | Analysis |
+|----------|--------------|--------------|-------------------------|---|----------|
+| 117      | very_short   | 4.77         | 0                       | 0 | Short call, low engagement |
+| 185      | short        | 5.23         | 0                       | 0 | Standard call, low engagement |
+| 111      | very_short   | 4.72         | 0                       | 0 | Quick rejection, very low engagement |
+| 10       | very_short   | 2.40         | 0                       | 0 | Immediate hang-up, no engagement |
+
+
 ## Expected Impact
 
 - **Capture non-linear patterns**: Binning reveals engagement thresholds
@@ -68,13 +88,19 @@ def apply_duration_feature_treatment(train_df: pd.DataFrame, test_df: pd.DataFra
 ## Results
 
 ### MLflow Performance
-Duration feature treatment delivered the best AUC results to date:
+Duration feature treatment shows strong performance with minimal improvement over baseline:
 
 <a href="../images/02_mlflow_duration.png" target="_blank">
   <img src="../images/02_mlflow_duration.png" alt="MLflow Results - Duration Treatment" width="800" style="cursor: pointer; border: 1px solid #ddd; border-radius: 4px; transition: 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
 </a>
 
-**Test AUC: 0.9685** - Best performance achieved so far
+**Single Model Performance (80/20 split):**
+- **Test AUC: 0.96844**
+
+**K-Fold Cross-Validation (5 folds):**
+- **Average AUC: 0.9686**
+
+Results demonstrate consistent performance with the cross-validation showing minimal variance. The improvement over the baseline model is marginal, indicating that while duration feature engineering provides value, the gains are incremental rather than transformative.
 
 ### Classification Metrics
 Detailed performance breakdown shows improved recall at the cost of precision:
@@ -83,9 +109,9 @@ Detailed performance breakdown shows improved recall at the cost of precision:
   <img src="../images/02_mlflow_duration_metrics.png" alt="MLflow Duration Treatment Metrics" width="800" style="cursor: pointer; border: 1px solid #ddd; border-radius: 4px; transition: 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
 </a>
 
-- **False Positives**: Increased from 3,702 to 3,968 (+266)
-- **False Negatives**: Reduced from 6,187 to 5,507 (-680)
-- **Trade-off**: Better at identifying actual subscribers (improved recall) with slight increase in false alarms
+- **False Positives**: Increased from 3,702 to 5,374 (+1,672)
+- **False Negatives**: Reduced from 6,187 to 4,409 (-1,778)
+- **Trade-off**: Better at identifying actual subscribers (improved recall) with increased false alarms
 
 ### Kaggle Competition Results
 The improved model translated to strong competition performance:

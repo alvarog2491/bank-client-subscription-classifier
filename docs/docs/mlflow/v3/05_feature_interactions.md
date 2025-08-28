@@ -1,3 +1,0 @@
-  - Previous success + current duration: Strong predictor combination
-  - Job type + education level: Professional segment interactions
-  - Month + contact type: Seasonal communication effectiveness
