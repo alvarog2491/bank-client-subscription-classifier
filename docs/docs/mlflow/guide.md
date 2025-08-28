@@ -27,8 +27,16 @@ mlflow run . -e predict -P model_uri="models:/ModelName/Production"
 mlflow run . -e main
 
 # Python 
+python -m src.data.preprocess
 python -m src.models.train_model --model-type lightgbm # before Optuna
 python -m src.models.train_model --model-type lightgbm --optimize True --n-trials 20 # After Optuna
+
+# Generate predictions
+python -m src.models.predict_model \
+      --model-uri models:/bank-client-subscription-classifier-xgboost/13 \
+      --model-type xgboost \
+      --input-path data/processed/test_processed.csv \
+      --output-path data/predictions/xgboost_duration_predictions.csv
 ```
 
 ## Basic Experiment Tracking
