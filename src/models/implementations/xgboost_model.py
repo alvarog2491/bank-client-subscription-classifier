@@ -34,6 +34,7 @@ class XGBoostModel(BaseModel):
                 "colsample_bytree": self.trial.suggest_float("colsample_bytree", 0.5, 1.0),
                 "reg_alpha": self.trial.suggest_float("reg_alpha", 0.0, 10.0),
                 "reg_lambda": self.trial.suggest_float("reg_lambda", 0.0, 10.0),
+                "scale_pos_weight": self.trial.suggest_float("scale_pos_weight", 1.0, 15.0),
             }
         else:
             # Use provided hyperparameters or defaults

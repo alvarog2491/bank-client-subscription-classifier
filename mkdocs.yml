@@ -31,6 +31,9 @@ nav:
           - Picking Best Model: mlflow/v2/05_best_model.md
           - Upload Predictions: mlflow/v2/07_upload_predictions.md
           - Conclusions: mlflow/v2/08_conclusions.md
+      - V3 - Feature engineering:
+          - Overview: mlflow/v3/01_overview.md
+          - Duration engineering: mlflow/v3/02_duration_feature_treatment.md
 
 theme:
   name: material

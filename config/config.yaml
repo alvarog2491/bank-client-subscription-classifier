@@ -69,6 +69,7 @@ optuna:
     colsample_bytree: [0.5, 1.0]
     reg_alpha: [0.0, 10.0]
     reg_lambda: [0.0, 10.0]
+    scale_pos_weight: [1.0, 15.0]
 
   catboost:
     iterations: [100, 1000]
