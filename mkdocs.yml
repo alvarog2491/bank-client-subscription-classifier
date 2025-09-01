@@ -40,6 +40,7 @@ nav:
           - Categorical engineering: mlflow/v4/03_categorical_feature_engineering.md
           - Numerical engineering: mlflow/v4/04_numerical_feature_enhancements.md
           - Feature interactions: mlflow/v4/05_feature_interactions.md
+          - Conclusions: mlflow/v4/06_conclusions.md
 
 theme:
   name: material
