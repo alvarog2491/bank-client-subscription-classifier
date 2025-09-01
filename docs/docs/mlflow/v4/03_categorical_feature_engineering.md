@@ -146,3 +146,18 @@ Competition submission results:
 
 - **Competition Score**: 0.96907
 - **Leaderboard Position**: 1159
+
+!!! warning "Spoiler Warning"
+    The following section contains information about final model selection and production deployment. Click to expand if you want to see the outcome.
+
+??? info "Model Promotion to Production"
+    Based on the strong performance results, model V19 was identified as the best performing model and promoted to production with the champion alias in the MLflow Model Registry.
+
+    <a href="../images/Promoted_model_production.png" target="_blank">
+      <img src="../images/Promoted_model_production.png" alt="Model V19 Promoted to Production" width="800" style="cursor: pointer; border: 1px solid #ddd; border-radius: 4px; transition: 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+    </a>
+
+    - **Model Version**: V19
+    - **Status**: Champion (Production)
+    - **Deployment**: Ready for inference and business use
+    - **Registry**: Versioned and tracked in MLflow Model Registry
