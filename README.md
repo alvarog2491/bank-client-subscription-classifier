@@ -1,14 +1,15 @@
 # Bank Client Subscription Classifier
 
-MLFlow project for Kaggle's Playground Series S5E8 competition focused on predicting bank client subscription to term deposits.
+This project's **primary goal is to demonstrate MLflow workflows** for experiment tracking, model registry, reproducible ML pipelines, and hands-on familiarity with the MLflow UI and processes, while participating in Kaggle's Playground Series S5E8 competition.
 
 ## Documentation
 
 [Full project analysis and documentation](https://alvaro-ai-ml-ds-lab.com/bank-client-subscription-classifier)
 
-## Project Overview
+### Navigation Guide
 
-This project demonstrates MLFlow workflows for experiment tracking and model management using a realistic banking dataset from the Kaggle competition. The dataset contains client demographic information, previous campaign interactions, and economic indicators to predict subscription outcomes.
+The documentation follows the complete MLFlow journey through different versions (V1, V2, V3, V4) showing the evolution of the process. **Navigate sequentially** through the left navigation panel from top to bottom to follow the development progression and understand how each iteration builds upon the previous version.
+
 
 **Competition Details:**
 
@@ -22,11 +23,11 @@ This project demonstrates MLFlow workflows for experiment tracking and model man
 
 ```bash
 # Install dependencies
-pip install -r requirements.txt
+pip install -e .
 
-# Start MLFlow tracking server
+# Start MLflow tracking server
 mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlartifacts
-# MLFlow UI will be available at http://localhost:5000
+# MLflow UI will be available at http://localhost:5000
 
 # Run MKDocs
 mkdocs serve
@@ -35,19 +36,21 @@ mkdocs serve
 ## Project Structure
 
 ```
-├── config/                 # Configuration files
-├── data/                  # Data files (raw, processed)
-├── experiments/           # Experiment scripts
-├── notebooks/            # Jupyter notebooks
-├── src/                  # Source code
-│   ├── data/            # Data processing
-│   ├── features/        # Feature engineering
-│   ├── models/          # Model training
-│   └── utils/           # Utilities
-├── tests/               # Unit tests
-└── MLproject           # MLFlow project definition
+├── config/                 # Configuration files and loaders
+├── data/                  # Data files (raw, processed, predictions)
+├── docs/                  # MkDocs documentation
+├── images/                # Project images and assets
+├── notebooks/             # Jupyter notebooks for EDA and experiments
+├── src/                   # Source code
+│   ├── data/             # Data processing modules
+│   └── models/           # Model training and evaluation
+├── tests/                 # Unit tests
+├── main.py                # Main entry point
+├── MLproject              # MLflow project definition
+├── pyproject.toml         # Python project configuration
+└── python_env.yaml        # Conda environment specification
 ```
 
 ## Development Status
 
-Initial project structure established with data exploration completed. Ready for feature engineering and model development phases.
+The core project structure is complete with full MLflow implementation across multiple iterations (V1-V4). The Kaggle competition has concluded, but the project remains open for further enhancements such as SHAP values for feature importance analysis, additional model interpretability tools, and extended MLflow workflow demonstrations.
