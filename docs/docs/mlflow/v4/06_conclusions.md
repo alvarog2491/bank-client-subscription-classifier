@@ -2,9 +2,8 @@
 
 ## Performance Summary
 
-The project began at position 1,427 on the competition leaderboard with a baseline of Regressor Trees tuned using Optuna. Introducing duration-based feature engineering provided the biggest leap, raising the rank to 1,170 with a score of 0.969. Subsequent enhancements—categorical encodings, numerical transformations, and feature interactions—nudged the model further to 1,152 with a final score of 0.96916.
+The project started at position 1,427 with a score of 0.96715 on the competition leaderboard. **Optuna optimization of the baseline Regressor Trees provided the largest boost**, raising the rank to 1,193 with a score of 0.96878. Subsequent duration-based feature engineering further improved the rank slightly to 1,170 with a score of 0.969, but the gains were comparatively small. Further enhancements, such as categorical encodings, numerical transformations, and feature interactions, only yielded marginal improvements. In fact, **categorical encodings were the only ones that slightly improved the ranking**, while the rest had negligible impact. This illustrates how, at high metric values, it becomes increasingly difficult to achieve meaningful improvements, and not all optimizations translate into better results.
 
-While the initial improvement was significant, progress slowed once performance reached the 0.969 range. This plateau reflects a common reality in well-performing models: each incremental gain requires big effort and deeper experimentation.
 
 ## Feature Engineering Journey
 
@@ -20,4 +19,4 @@ The feature engineering process unfolded in several stages:
 
 ## Key Takeaways
 
-The move from 1,427 to 1170 shows feature engineering can make a real difference in competition performance. However, the smaller gains afterward highlight how challenging optimization becomes at higher performance levels. The model’s performance remained consistent across different validation methods, including k-fold cross-validation, which suggests that the engineered features captured predictive signals rather than overfitting to noise.
+The move from 1,427 to 1170 shows feature engineering can make a difference in competition performance. However, the **smaller gains** afterward **highlight how challenging optimization becomes** at higher performance levels. The **model’s performance remained consistent across different validation methods**, including k-fold cross-validation, which suggests that the engineered features captured predictive signals rather than overfitting to noise.
