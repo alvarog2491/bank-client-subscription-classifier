@@ -36,12 +36,6 @@ The function prints data shapes and returns both datasets as pandas DataFrames.
 
 **File**: `src/data/preprocess.py`
 
-### MLFlow Entry Point
-```bash
-mlflow run . -e data_preprocessing
-```
-
-### Process Flow
 The preprocessing performs label encoding on categorical features:
 
 ```python

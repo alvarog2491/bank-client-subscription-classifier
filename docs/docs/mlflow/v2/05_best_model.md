@@ -19,5 +19,5 @@ Other results:
 </a>
 
 !!! warning "Class Imbalance Impact"
-    The winning model shows a **high number of false negatives**, likely due to the 7.3:1 class imbalance in the dataset. While achieving strong AUC performance, the model tends to under-predict positive cases (subscription = 1). This issue will be addressed in V3 through class imbalance handling techniques.
+    The winning model shows a **high number of false negatives**, likely due to the 7.3:1 class imbalance in the dataset. While achieving strong AUC performance, the model tends to under-predict positive cases (subscription = 1). This issue will be addressed in V4 through class imbalance handling techniques.
 

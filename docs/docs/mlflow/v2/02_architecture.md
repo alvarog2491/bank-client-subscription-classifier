@@ -74,7 +74,7 @@ sequenceDiagram
     TrainFunc->>MLFlow: start_run() [parent]
     
     rect rgb(255, 248, 240)
-        Note over TrainFunc,DB: 🔍 OPTIMIZATION PHASE
+        Note over TrainFunc,DB: OPTIMIZATION PHASE
         TrainFunc->>Optimizer: optimize_hyperparameters()
         Optimizer->>DB: create_study(model_type + "_optimization")
         DB-->>Optimizer: persistent study
@@ -98,7 +98,7 @@ sequenceDiagram
     end
     
     rect rgb(245, 255, 245)
-        Note over TrainFunc,MLFlow: 📊 FINAL LOGGING PHASE
+        Note over TrainFunc,MLFlow: FINAL LOGGING PHASE
         TrainFunc->>MLFlow: log_param("best_" + param) for each
         TrainFunc->>Model: log_metrics(best_metrics)
         TrainFunc->>Model: log_model(X_val, model_name)

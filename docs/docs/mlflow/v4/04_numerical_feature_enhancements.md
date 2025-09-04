@@ -27,11 +27,11 @@ def create_balance_transformations(train_df, test_df):
     return train_df, test_df
 ```
 
-**Arcsinh advantages over log1p:**
-- Handles negative values directly (debt accounts)
-- Symmetric transformation preserves sign
-- Better numerical stability for optimization
-- Similar variance reduction without domain restrictions
+??? info "Arcsinh Advantages over log1p"
+    - Handles negative values directly (useful for debt accounts)
+    - Symmetric transformation preserves sign
+    - Better numerical stability for optimization
+    - Similar variance reduction without domain restrictions
 
 ### 2. Age Demographic Segmentation
 

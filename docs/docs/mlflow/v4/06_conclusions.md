@@ -17,6 +17,9 @@ The feature engineering process unfolded in several stages:
 
 - **Feature Interactions**: Combinations such as previous campaign success × call engagement added complementary predictive power.
 
+!!! warning "Binning Numerical Features"
+    Splitting numerical features into bins may not improve performance for tree-based models. However, this app is implemented following a factory pattern, so new models based on regression or other approaches can easily take advantage of it. The implementation is already in place and ready to be used for such models.
+
 ## Key Takeaways
 
 The move from 1,427 to 1170 shows feature engineering can make a difference in competition performance. However, the **smaller gains** afterward **highlight how challenging optimization becomes** at higher performance levels. The **model’s performance remained consistent across different validation methods**, including k-fold cross-validation, which suggests that the engineered features captured predictive signals rather than overfitting to noise.

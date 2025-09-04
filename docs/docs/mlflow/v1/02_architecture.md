@@ -107,14 +107,14 @@ sequenceDiagram
     Config-->>TrainFunc: config dict
     
     rect rgb(240, 248, 255)
-        Note over MLProject,DataLoader: 🔄 DATA LOADING PHASE
+        Note over MLProject,DataLoader: DATA LOADING PHASE
         TrainFunc->>DataLoader: load_processed_data()
         DataLoader-->>TrainFunc: train_processed.csv
         TrainFunc->>TrainFunc: train_test_split(X, y)
     end
     
     rect rgb(245, 255, 245)
-        Note over TrainFunc,MLFlow: 🤖 MODEL TRAINING PHASE
+        Note over TrainFunc,MLFlow: MODEL TRAINING PHASE
         TrainFunc->>MLFlow: set_experiment()
         TrainFunc->>MLFlow: start_run()
         TrainFunc->>MLFlow: log_param(model_type, hyperparams...)
@@ -128,7 +128,7 @@ sequenceDiagram
     end
     
     rect rgb(255, 248, 240)
-        Note over TrainFunc,MLFlow: 📊 EVALUATION & LOGGING PHASE
+        Note over TrainFunc,MLFlow: EVALUATION & LOGGING PHASE
         TrainFunc->>Model: evaluate(X_val, y_val)
         Model->>Model: calculate metrics
         Model-->>TrainFunc: metrics dict
