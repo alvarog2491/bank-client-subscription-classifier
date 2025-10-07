@@ -10,14 +10,14 @@ This analysis examines the bank marketing dataset to understand customer charact
 
 ## Dataset Overview
 
-The training dataset contains 750,000 records with 17 features. Initial inspection reveals clean data with no missing values, which simplifies preprocessing. The target variable shows significant class imbalance - only 12.1% of customers subscribed to term deposits.
+The training dataset contains 750,000 records with 17 features. Initial inspection reveals **clean data with no missing values and without duplicates**, which simplifies preprocessing. The target variable shows significant class imbalance - only 12.1% of customers subscribed to term deposits.
 
 
 <a href="../../images/target_distribution.png" target="_blank">
   <img src="../../images/target_distribution.png" alt="Target Distribution" width="800" style="cursor: pointer; border: 1px solid #ddd; border-radius: 4px; transition: 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
 </a>
 
-The imbalance ratio of 7.3:1 will need consideration during model training.
+The imbalance ratio of 7.3:1 will need consideration during model training. SMOTE Technic can improve the data to generate more data on the minority class
 
 ## Feature Analysis
 

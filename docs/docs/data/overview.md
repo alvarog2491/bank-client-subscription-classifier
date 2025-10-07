@@ -49,36 +49,6 @@ The dataset contains 17 features representing client information and campaign de
 ### Target Variable
 - **y**: Client subscribed to term deposit (binary: 1=yes, 0=no)
   
-
-## Data Characteristics
-
-**Size**: The dataset contains 45,211 entries.
-
-**Quality**: No preprocessing has been applied to the original dataset. Users need to handle:
-- Missing values (if any)
-- Categorical variable encoding
-- Outlier treatment
-
-**Special Values**: The `pdays` feature uses -1 to indicate clients not previously contacted
-
-## Data Source & License
-
-**Original Source**: UCI Machine Learning Repository  
-**License**: Open Data Commons Public Domain Dedication and License (PDDL)  
-**Availability**: Public use without restrictions
-
-The dataset is provided "as is" without warranty, encouraging users to perform their own data quality validation and preprocessing.
-
-## Analysis Approach
-
-Our exploration focuses on:
-
-1. **Data Quality Assessment**: Missing values, outliers, data types
-2. **Descriptive Analysis**: Feature distributions and summary statistics  
-3. **Target Relationship Analysis**: How features relate to subscription behavior
-4. **Correlation Analysis**: Inter-feature relationships
-5. **Temporal Patterns**: Seasonal and timing effects on campaign success
-
 **→ See [Exploratory Data Analysis](eda.md) for detailed findings and visualizations.**
 
 The analysis results guide model selection and preprocessing decisions for optimal prediction performance.

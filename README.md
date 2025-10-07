@@ -36,19 +36,29 @@ mkdocs serve
 ## Project Structure
 
 ```
-├── config/                 # Configuration files and loaders
-├── data/                  # Data files (raw, processed, predictions)
-├── docs/                  # MkDocs documentation
-├── images/                # Project images and assets
-├── notebooks/             # Jupyter notebooks for EDA and experiments
-├── src/                   # Source code
-│   ├── data/             # Data processing modules
-│   └── models/           # Model training and evaluation
-├── tests/                 # Unit tests
-├── main.py                # Main entry point
-├── MLproject              # MLflow project definition
-├── pyproject.toml         # Python project configuration
-└── python_env.yaml        # Conda environment specification
+├── .github/                  # GitHub configuration
+├── catboost_info/            # CatBoost training artifacts
+├── config/                   # Configuration files and loaders
+├── data/                     # Data files (raw, processed, predictions)
+│   ├── predictions/          # Model predictions output
+│   ├── processed/            # Processed datasets
+│   └── raw/                  # Raw competition data
+├── docs/                     # MkDocs documentation
+├── images/                   # Project images and assets
+├── mlartifacts/              # MLflow artifacts storage
+├── mlruns/                   # MLflow experiment tracking data
+├── notebooks/                # Jupyter notebooks for EDA and experiments
+├── src/                      # Source code
+│   ├── data/                 # Data loading and preprocessing modules
+│   └── models/               # Model training, evaluation, and prediction
+│       ├── core/             # Core model abstractions
+│       └── implementations/  # Model implementations (LightGBM, XGBoost, CatBoost)
+├── tests/                    # Unit tests
+├── main.py                   # Main entry point
+├── MLproject                 # MLflow project definition
+├── mkdocs.yml                # MkDocs configuration
+├── pyproject.toml            # Python project configuration
+└── python_env.yaml           # Conda environment specification (Needed for MLFlow)
 ```
 
 ## Development Status
