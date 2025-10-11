@@ -6,7 +6,7 @@ import mlflow.pyfunc
 from typing import Dict, Any, Tuple, Optional
 import numpy as np
 from config.config_loader import load_config
-from src.models.core.model_factory import ModelFactory
+from models.base_model import ModelFactory
 
 
 def _setup_mlflow(config: Dict[str, Any]) -> None:

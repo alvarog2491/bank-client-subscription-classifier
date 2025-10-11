@@ -2,7 +2,7 @@ import lightgbm as lgb
 import mlflow.lightgbm
 import pandas as pd
 import numpy as np
-from ..core.base_model import BaseModel
+from .base_model import BaseModel
 from typing import Dict, Any, Optional
 from mlflow.models import infer_signature
 

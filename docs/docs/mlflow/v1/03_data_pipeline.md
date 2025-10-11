@@ -11,7 +11,7 @@ The data pipeline consists of data loading and preprocessing stages.
 
 ### Implementation
 
-**File**: `src/data/load_data.py`
+**File**: `src/load_data.py`
 
 ### Functions Available
 - `load_train_data()` - Loads training data from raw CSV
@@ -34,7 +34,7 @@ The function prints data shapes and returns both datasets as pandas DataFrames.
 
 ### Implementation
 
-**File**: `src/data/preprocess.py`
+**File**: `src/preprocess.py`
 
 The preprocessing performs label encoding on categorical features:
 
@@ -108,12 +108,12 @@ features:
 mlflow run . -e data_preprocessing
 
 # Direct execution
-python -m src.data.preprocess
+python src/preprocess.py
 ```
 
 ### Load Processed Data
 ```python
-from src.data.load_data import load_processed_data, load_label_encoders
+from src.load_data import load_processed_data, load_label_encoders
 
 # Load processed datasets
 train_df, test_df = load_processed_data()

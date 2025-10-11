@@ -5,8 +5,7 @@ from sklearn.model_selection import train_test_split
 import mlflow
 import optuna
 import os
-from .core.model_factory import ModelFactory
-from .core.base_model import BaseModel
+from models.base_model import ModelFactory, BaseModel
 from config.config_loader import load_config
 
 

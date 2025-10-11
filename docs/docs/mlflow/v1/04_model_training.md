@@ -8,7 +8,7 @@ The model training system implements three gradient boosting algorithms with har
 
 ### Base Model Class
 
-**File**: `src/models/core/base_model.py`
+**File**: `src/models/base_model.py`
 
 ```python
 from abc import ABC, abstractmethod
@@ -101,7 +101,7 @@ class BaseModel(ABC):
 
 ### Model Factory
 
-**File**: `src/models/core/model_factory.py`
+**File**: `src/models/base_model.py` (ModelFactory class)
 
 The ModelFactory provides both model creation and loading capabilities:
 
@@ -147,7 +147,7 @@ class ModelFactory:
 
 ### 1. LightGBM Model
 
-**File**: `src/models/implementations/lightgbm_model.py`
+**File**: `src/models/lightgbm_model.py`
 
 **Hyperparameters (from config.yaml):**
 ```yaml
@@ -203,7 +203,7 @@ def load(cls, model_uri: str, config: Dict[str, Any]):
 
 ### 2. XGBoost Model
 
-**File**: `src/models/implementations/xgboost_model.py`
+**File**: `src/models/xgboost_model.py`
 
 **Hyperparameters (from config.yaml):**
 ```yaml
@@ -253,7 +253,7 @@ def load(cls, model_uri: str, config: Dict[str, Any]):
 
 ### 3. CatBoost Model
 
-**File**: `src/models/implementations/catboost_model.py`
+**File**: `src/models/catboost_model.py`
 
 **Hyperparameters (from config.yaml):**
 ```yaml
@@ -308,7 +308,7 @@ def load(cls, model_uri: str, config: Dict[str, Any]):
 
 ## Training Process
 
-**File**: `src/models/train_model.py`
+**File**: `src/train.py`
 
 ```python
 def train_model(model_type: str) -> str:
@@ -430,9 +430,9 @@ mlflow run . -e train -P model_type=xgboost
 mlflow run . -e train -P model_type=catboost
 
 # Python
-python -m src.models.train_model --model-type lightgbm
-python -m src.models.train_model --model-type xgboost
-python -m src.models.train_model --model-type catboost
+python src/train.py --model-type lightgbm
+python src/train.py --model-type xgboost
+python src/train.py --model-type catboost
 ```
 
 ### Train All Models

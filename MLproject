@@ -4,17 +4,17 @@ python_env: python_env.yaml
 
 entry_points:
   data_preprocessing:
-    command: "python -m src.data.preprocess"
+    command: "python src/preprocess.py"
 
   feature_engineering:
-    command: "python src/features/build_features.py"
+    command: "python src/preprocess.py"
 
   train:
     parameters:
       model_type: { type: string, default: "lightgbm" }
       optimize: { type: bool, default: false }
       n_trials: { type: int, default: 10 }
-    command: "python -m src.models.train_model --model-type {model_type} --optimize {optimize} --n-trials {n_trials}"
+    command: "python src/train.py --model-type {model_type} --optimize {optimize} --n-trials {n_trials}"
 
   predict:
     parameters:
@@ -22,7 +22,7 @@ entry_points:
       model_type: { type: string }
       input_path: { type: string }
       output_path: { type: string }
-    command: "python -m src.models.predict_model --model-uri {model_uri} --model-type {model_type} --input-path {input_path} --output-path {output_path}"
+    command: "python src/predict.py --model-uri {model_uri} --model-type {model_type} --input-path {input_path} --output-path {output_path}"
 
   main:
     command: "python main.py"

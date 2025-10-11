@@ -4,17 +4,17 @@
 
 Traditional mode with predefined hyperparameters:
 ```bash
-python -m src.models.train_model --model-type lightgbm --optimize False
+python src/train.py --model-type lightgbm --optimize False
 ```
 
 Optimization mode with Optuna trials:
 ```bash
-python -m src.models.train_model --model-type lightgbm --optimize True --n-trials 20
+python src/train.py --model-type lightgbm --optimize True --n-trials 20
 ```
 
 ## Implementation: Hyperparameter Optimization Function
 
-**File**: `src/models/train_model.py`
+**File**: `src/train.py`
 
 ```python
 def optimize_hyperparameters(
@@ -63,7 +63,7 @@ def optimize_hyperparameters(
 
 The ModelFactory now supports Optuna trial objects alongside traditional hyperparameter dictionaries:
 
-**File**: `src/models/core/model_factory.py`
+**File**: `src/models/base_model.py` (ModelFactory class)
 
 ```python
 # Enhanced factory method signature
@@ -88,7 +88,7 @@ def create_model(
 
 Each model implementation now includes conditional optimization logic. Key enhancement in LightGBM:
 
-**File**: `src/models/implementations/lightgbm_model.py`
+**File**: `src/models/lightgbm_model.py`
 
 ```python
 def train(self, X_train: pd.DataFrame, y_train: pd.Series, 
@@ -117,7 +117,7 @@ def train(self, X_train: pd.DataFrame, y_train: pd.Series,
 
 The updated `train_model()` function seamlessly integrates optimization:
 
-**File**: `src/models/train_model.py`
+**File**: `src/train.py`
 
 ```python
 def train_model(model_type: str, optimize: bool = False, n_trials: int = 10) -> str:

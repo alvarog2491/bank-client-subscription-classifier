@@ -4,10 +4,10 @@
 
 Using the champion XGBoost model (version 10) to generate competition predictions:
 
-**File**: `src/models/predict_model.py`
+**File**: `src/predict.py`
 
 ```bash
-python -m src.models.predict_model \
+python src/predict.py \
      --model-uri models:/bank-client-subscription-classifier-xgboost/10 \
      --model-type xgboost \
      --input-path data/processed/test_processed.csv \

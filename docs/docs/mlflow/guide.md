@@ -27,12 +27,12 @@ mlflow run . -e predict -P model_uri="models:/ModelName/Production"
 mlflow run . -e main
 
 # Python 
-python -m src.data.preprocess
-python -m src.models.train_model --model-type lightgbm # before Optuna
-python -m src.models.train_model --model-type lightgbm --optimize True --n-trials 20 # After Optuna
+python src/preprocess.py
+python src/train.py --model-type lightgbm # before Optuna
+python src/train.py --model-type lightgbm --optimize True --n-trials 20 # After Optuna
 
 # Generate predictions
-python -m src.models.predict_model \
+python src/predict.py \
       --model-uri models:/bank-client-subscription-classifier-xgboost/13 \
       --model-type xgboost \
       --input-path data/processed/test_processed.csv \
@@ -211,7 +211,7 @@ entry_points:
     parameters:
       model_type: {type: string, default: "lightgbm"}
       n_estimators: {type: int, default: 100}
-    command: "python src/models/train_model.py --model-type {model_type}"
+    command: "python src/train.py --model-type {model_type}"
 ```
 
 These patterns cover the most common MLFlow operations needed for machine learning experimentation and model management.

@@ -147,22 +147,17 @@ sequenceDiagram
 
 ```
 src/
-├── data/
-│   ├── __init__.py
-│   ├── load_data.py         # Data loading functions
-│   └── preprocess.py        # Data preprocessing functions  
-├── models/
-│   ├── __init__.py
-│   ├── core/
-│   │   ├── base_model.py    # BaseModel abstract class
-│   │   └── model_factory.py # ModelFactory static class
-│   ├── implementations/
-│   │   ├── catboost_model.py    # CatBoostModel class
-│   │   ├── lightgbm_model.py    # LightGBMModel class
-│   │   └── xgboost_model.py     # XGBoostModel class
-│   ├── predict_model.py     # Prediction functions
-│   └── train_model.py       # Training functions
-│
+├── load_data.py             # Data loading functions
+├── preprocess.py            # Data preprocessing functions
+├── train.py                 # Model training pipeline
+├── predict.py               # Model prediction pipeline
+└── models/
+    ├── __init__.py
+    ├── base_model.py        # BaseModel abstract class and ModelFactory
+    ├── lightgbm_model.py    # LightGBM implementation
+    ├── xgboost_model.py     # XGBoost implementation
+    └── catboost_model.py    # CatBoost implementation
+
 config/
 ├── config.yaml              # Main configuration file
 └── config_loader.py         # Configuration loading functions

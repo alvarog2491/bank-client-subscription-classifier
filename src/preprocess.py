@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 import joblib
 from typing import Tuple
-from .load_data import load_data
+from load_data import load_data
 from config.config_loader import load_config
 
 
