@@ -4,7 +4,7 @@ This project's **primary goal is to demonstrate MLflow workflows** for experimen
 
 ## Documentation
 
-[Full project analysis and documentation](https://alvaro-ai-ml-ds-lab.com/bank-client-subscription-classifier)
+[Full project analysis and documentation](https://bank-client-subscription-classifier.alvaro-ai-ml-ds-lab.com/)
 
 ### Navigation Guide
 
