@@ -2,7 +2,7 @@
 
 ## Performance Analysis
 
-After training three gradient boosting models with hardcoded hyperparameters, comparative performance analysis reveals consistent results across all implementations. Each model achieved AUC scores ranging from 0.96 to 0.966, indicating strong predictive capability.
+Comparative performance analysis of the three gradient boosting models (trained with hardcoded hyperparameters) indicates consistent results across all implementations. AUC scores range from 0.96 to 0.966, demonstrating strong predictive capability for each model type.
 
 <a href="../images/model_comparison_graph.png" target="_blank">
   <img src="../images/model_comparison_graph.png" alt="Model Comparison Graph" width="800" style="cursor: pointer; border: 1px solid #ddd; border-radius: 4px; transition: 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">

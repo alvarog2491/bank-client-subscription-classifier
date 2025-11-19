@@ -25,6 +25,6 @@ After generating predictions using the champion XGBoost model, the submission wa
 
 ## Performance Analysis
 
-The first submission results are quite encouraging. Scoring **0.96715** puts me in a strong position - this is genuinely close to perfect prediction with an AUC near 1.0. The **gap to leader is only 1%**, which shows our model selection and MLflow pipeline are working well.
+The initial submission achieved a score of **0.96715**, indicating a high level of predictive accuracy with an AUC near 1.0. The **1% gap to the leader** validates the effectiveness of the selected model and MLflow pipeline.
 
-Being ranked 1,427th might seem disappointing at first glance, but it's important to remember this is a popular competition with thousands of participants. The **performance difference is actually quite small**, suggesting I'm on the right track.
+While the rank of 1,427th reflects the high participation level of the competition, the **small performance differential** suggests the current approach provides a solid foundation for further optimization.

@@ -1,7 +1,7 @@
 # Architecture Changes - V2.0
 
 !!! info "Optuna Integration Architecture"
-    V2.0 adds `trial` parameter support throughout the model hierarchy, enabling automated parameter suggestions to replace hardcoded values.
+    V2.0 extends the model hierarchy with `trial` parameter support, enabling the replacement of hardcoded values with automated parameter suggestions.
     
 ## UML Class Diagram - New Components
 

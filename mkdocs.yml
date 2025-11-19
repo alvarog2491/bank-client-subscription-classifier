@@ -12,7 +12,7 @@ nav:
   - Data:
       - Overview: data/overview.md
       - EDA: data/eda.md
-  - MLFlow Journey:
+  - MLFlow Project:
       - Quick Reference: mlflow/guide.md
       - V1 - Initial Implementation:
           - Overview: mlflow/v1/01_overview.md

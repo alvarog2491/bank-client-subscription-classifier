@@ -3,11 +3,11 @@
 ## UML Class Diagram
 
 !!! info "Extensible Architecture"
-    The system uses the **Factory Pattern** combined with **configuration-driven design** to make adding new machine learning models effortless. The `ModelFactory` maintains a registry of available models, while hyperparameters are centralized in `config.yaml`. To add a new model (e.g., RandomForest), you simply:
+    The system uses the **Factory Pattern** combined with **configuration-driven design** to facilitate the addition of new machine learning models. The `ModelFactory` maintains a registry of available models, while hyperparameters are centralized in `config.yaml`. New models (e.g., RandomForest) are integrated by:
     
-    1. Create a new class inheriting from `BaseModel` 
-    2. Add it to the factory's `_models` dictionary
-    3. Define its hyperparameters in the config file
+    1. Creating a new class inheriting from `BaseModel` 
+    2. Adding it to the factory's `_models` dictionary
+    3. Defining its hyperparameters in the config file
     4. The model immediately becomes available through MLflow entry points
     
     This design separates algorithm implementation from pipeline orchestration, enabling rapid experimentation without modifying core training logic.
@@ -166,22 +166,14 @@ MLproject                   # MLFlow project definition
 main.py                     # Main pipeline runner
 ```
 
-## Design Patterns Used
+## Design Patterns
 
 ### Factory Pattern
-- **ModelFactory**: Creates model instances based on string identifiers
-- Static method approach with dictionary mapping
-- Supports easy addition of new model types
-- Encapsulates model instantiation logic
+The `ModelFactory` class centralizes model creation, allowing the system to instantiate different algorithms (LightGBM, XGBoost, CatBoost) based on configuration strings. This approach encapsulates instantiation logic and simplifies the addition of new model types without modifying client code.
 
-### Template Method Pattern  
-- **BaseModel**: Abstract class defining training/prediction workflow
-- Concrete implementations provide algorithm-specific details
-- Ensures consistent interface across all models
-- Common evaluation logic in base class
+### Template Method Pattern
+The `BaseModel` abstract class defines the skeleton of the training and prediction workflow, enforcing a consistent interface. Concrete subclasses implement the algorithm-specific details, while common logic like evaluation and metric logging remains unified in the base class.
 
 ### Strategy Pattern
-- **Model Implementations**: Interchangeable algorithms (LightGBM, XGBoost, CatBoost)
-- Runtime selection of training strategy based on configuration
-- Consistent evaluation metrics across strategies
+The system treats different machine learning algorithms as interchangeable strategies. This allows the training pipeline to dynamically select and switch between LightGBM, XGBoost, or CatBoost at runtime based on the provided configuration, while maintaining a uniform execution context.
 

@@ -2,9 +2,9 @@
 
 The inference pipeline generates predictions using trained MLflow models with explicit parameter requirements.
 
-## How It Works
+## Inference Workflow
 
-The `predict_model.py` module follows a straightforward workflow:
+The `predict_model.py` module implements a validation-heavy pipeline:
 
 ```python
 def predict_model(
@@ -15,7 +15,7 @@ def predict_model(
 ) -> pd.DataFrame:
     """Generate predictions from MLflow model and save to CSV.
     
-    Complete pipeline: validate inputs, load model, prepare data,
+    Pipeline steps: validate inputs, load model, prepare data,
     predict probabilities (with fallback), save results.
     """
     config = load_config()

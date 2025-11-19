@@ -5,7 +5,7 @@
 V3 extends the existing factory pattern architecture with cross-validation capabilities in the `BaseModel` class.
 
 !!! info "K-fold Integration"
-    The `BaseModel` class now includes a `cross_validate()` method that performs stratified K-fold cross-validation. This method integrates seamlessly with the existing training pipeline while providing robust performance evaluation.
+    The `BaseModel` class has been augmented with a `cross_validate()` method that executes stratified K-fold cross-validation. This method integrates with the existing training pipeline to provide robust performance evaluation.
 
 ## Core Components
 

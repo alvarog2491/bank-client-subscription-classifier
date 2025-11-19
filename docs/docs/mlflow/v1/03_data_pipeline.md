@@ -5,7 +5,7 @@
 The data pipeline consists of data loading and preprocessing stages.
 
 !!! info "V1.0 Data Pipeline Scope"
-    The dataset is already pre-cleaned and contains no missing values, so no additional cleaning or imputation is required. At this stage, the only preprocessing step is applying label encoding to categorical features to make them compatible with the models. 
+    The dataset is pre-cleaned and contains no missing values, eliminating the need for imputation. The current preprocessing stage focuses exclusively on label encoding categorical features to ensure model compatibility. 
 
 ## Data Loading
 

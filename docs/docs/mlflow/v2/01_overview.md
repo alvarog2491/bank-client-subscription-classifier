@@ -3,15 +3,15 @@
 !!! warn "Documentation Scope"
     This V2 documentation covers only the updated and newly created components. For the foundational logic and architecture structure, please refer to the V1 documentation.
 
-## Project Goals for V2
+## System Scope (V2.0)
 
-The main goal of V2 is to **implement Optuna for automated hyperparameter discovery** across all model algorithms. While V1 established the core architecture using hardcoded hyperparameters, V2 seeks to unlock each algorithm's full potential through systematic parameter optimization.
+The V2.0 implementation integrates **Optuna for automated hyperparameter discovery** across all model algorithms. While V1 established the core architecture using hardcoded hyperparameters, V2 unlocks each algorithm's potential through systematic parameter optimization.
 
-## What is Optuna?
+## Optuna Integration
 
 Optuna is an automatic hyperparameter optimization framework that uses intelligent sampling strategies to find optimal model parameters efficiently. Unlike grid search or random search, it focuses computational resources on promising parameter regions.
 
-Optuna maintains optimization history through persistent storage, allowing studies to accumulate knowledge across multiple training sessions rather than starting from scratch each time.
+The system utilizes Optuna's persistent storage to maintain optimization history, allowing studies to accumulate knowledge across multiple training sessions.
 
 **Official Resources:**
 

@@ -357,7 +357,7 @@ def train_model(model_type: str) -> str:
         model_instance.log_model(X_val, model_name=model_name)
 ```
 !!! warning "Unbalanced dataset"
-    The dataset is highly unbalanced, so it's crucial to stratify the train-test split by the target variable (Y).
+    Due to the class imbalance in the dataset, the train-test split is stratified by the target variable (Y) to maintain representative class distributions.
 
 ## MLFlow Integration
 
